@@ -16,7 +16,7 @@ vgaromimage: file="/usr/local/share/bochs/VGABIOS-lgpl-latest"
 boot: disk
 floppy_bootsig_check: disabled=0
 # no floppya
-floppya: image="a.img", status=inserted
+floppya: image="os.img", status=inserted
 # no floppyb
 ata0: enabled=true, ioaddr1=0x1f0, ioaddr2=0x3f0, irq=14
 ata0-master: type=disk, path="./build/hd.img", mode=flat
