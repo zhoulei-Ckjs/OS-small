@@ -131,7 +131,7 @@ void console_write(char *buf, u32 count)
                 break;
             case ASCII_BEL:
                 break;
-            case ASCII_BS:
+            case ASCII_BS:          //退格符
                 command_bs();
                 break;
             case ASCII_HT:

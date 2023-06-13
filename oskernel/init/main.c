@@ -1,5 +1,5 @@
 #include "../include/linux/tty.h"
-//#include "../include/linux/kernel.h"
+#include "../include/linux/kernel.h"
 
 void kernel_main(void)
 {
@@ -7,7 +7,9 @@ void kernel_main(void)
 
     char* s = "myos";
 
-    console_write(s, 5);
+    for (int i = 0; i < 20; ++i) {
+        printf("name: %s, age:%d\n", s, i);
+    }
 
     while (true);
 }
