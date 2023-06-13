@@ -1,29 +1,27 @@
-;0柱面0磁道1扇区
 [ORG  0x7c00]
 
 [SECTION .data]
-LOADER_MAIN_ADDR equ 0x500    ;将loader读入到这个地址
+BOOT_MAIN_ADDR equ 0x500
 
 [SECTION .text]
 [BITS 16]
-global mbr_start
-mbr_start:
-
-;设置屏幕模式为文本模式，清除屏幕
+global boot_start
+boot_start:
+    ; 设置屏幕模式为文本模式，清除屏幕
     mov ax, 3
     int 0x10
 
-    ;将loader读入内存
-    mov edi, LOADER_MAIN_ADDR   ;读到哪里
-    mov ecx, 1                  ;从哪个扇区开始读
-    mov bl, 2                   ;读多少扇区
-    call read_hd                ;开始读盘
+    ; 将setup读入内存
+    mov edi, BOOT_MAIN_ADDR ; 读到哪里
+    mov ecx, 1      ; 从哪个扇区开始读
+    mov bl, 2       ; 读多少扇区
+    call read_hd
 
-    ;跳过去
-    mov si, jmp_to_loader
-    call print
+    ; 跳过去
+    mov     si, jmp_to_setup
+    call    print
 
-    jmp LOADER_MAIN_ADDR
+    jmp     BOOT_MAIN_ADDR
 
 read_hd:
     ; 0x1f2 8bit 指定读取或写入的扇区数
@@ -123,8 +121,8 @@ print:
 .done:
     ret
 
-jmp_to_loader:
-    db "jump to loader...", 10, 13, 0
+jmp_to_setup:
+    db "jump to setup...", 10, 13, 0
 
 times 510 - ($ - $$) db 0
 db 0x55, 0xaa

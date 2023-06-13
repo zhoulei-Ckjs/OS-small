@@ -14,11 +14,27 @@ DEBUG:= -g
 
 HD_IMG_NAME:= "os.img"
 
-all: ${BUILD}/boot/mbr.o ${BUILD}/boot/loader.o
+all: ${BUILD}/boot/mbr.o ${BUILD}/boot/loader.o ${BUILD}/kernel.bin
 	$(shell rm -rf $(BUILD)/$(HD_IMG_NAME))
 	bximage -q -hd=16 -func=create -sectsize=512 -imgmode=flat $(BUILD)/$(HD_IMG_NAME)
 	dd if=${BUILD}/boot/mbr.o of=$(BUILD)/$(HD_IMG_NAME) bs=512 seek=0 count=1 conv=notrunc
 	dd if=${BUILD}/boot/loader.o of=$(BUILD)/$(HD_IMG_NAME) bs=512 seek=1 count=2 conv=notrunc
+	dd if=${BUILD}/kernel.bin of=$(BUILD)/$(HD_IMG_NAME) bs=512 seek=3 count=60 conv=notrunc
+
+${BUILD}/kernel.bin: ${BUILD}/elf_kernel.bin
+	objcopy -O binary ${BUILD}/elf_kernel.bin ${BUILD}/kernel.bin
+	nm ${BUILD}/elf_kernel.bin | sort > ${BUILD}/kernel.map
+	#elf_kernel是包含调试符号的
+
+${BUILD}/elf_kernel.bin: ${BUILD}/boot/kernel.o ${BUILD}/init/main.o
+	ld -m elf_i386 $^ -o $@ -Ttext 0x1200
+
+${BUILD}/init/main.o: oskernel/init/main.c
+	$(shell mkdir -p ${BUILD}/init)
+	gcc ${CFLAGS} ${DEBUG} -c $< -o $@
+
+${BUILD}/boot/kernel.o: oskernel/boot/kernel.asm
+	nasm -f elf32 -g $< -o $@
 
 ${BUILD}/boot/%.o: oskernel/boot/%.asm
 	$(shell mkdir -p ${BUILD}/boot)
@@ -31,16 +47,16 @@ bochs: all
 	bochs -q -f bochsrc
 
 qemug: all
-	qemu-system-x86_64 -m 32M -hda ./build/hd.img -S -s
+	qemu-system-x86_64 -m 32M -hda ./build/os.img -S -s
 
 qemu: all
 	qemu-system-i386 \
 	-m 32M \
 	-boot c \
-	-hda ./build/hd.img
+	-hda ./build/os.img
 
 # 生成的内核镜像给VBox、VMware用
 vmdk: $(BUILD)/master.vmdk
 
-$(BUILD)/master.vmdk: ./build/hd.img
+$(BUILD)/master.vmdk: ./build/os.img
 	qemu-img convert -O vmdk $< $@
