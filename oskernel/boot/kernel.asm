@@ -5,7 +5,7 @@ extern kernel_main
 global _start
 
 _start:
-    xchg bx,bx  ;----------------------------------------------------------
+    ;xchg bx,bx  ;----------------------------------------------------------
     call kernel_main
 
     jmp $
