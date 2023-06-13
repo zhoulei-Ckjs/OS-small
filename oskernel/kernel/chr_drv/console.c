@@ -124,7 +124,7 @@ void console_write(char *buf, u32 count)
     char *ptr = (char *)pos;
     while (count--)
     {
-        ch = *buf++;
+        ch = *buf++;                //获得字符
         switch (ch)
         {
             case ASCII_NUL:
@@ -159,9 +159,13 @@ void console_write(char *buf, u32 count)
                     command_lf();
                 }
 
-                *ptr = ch;
+                /*
+                 *      字符（byte） + 颜色（byte）
+                 * */
+                *ptr = ch;          //往显存中写入ch字符
                 ptr++;
-                *ptr = 0x07;
+                *ptr = 0x07;        //再写入颜色，白色字体
+//                *ptr = 0x0c;      //红色字体
                 ptr++;
 
                 pos += 2;
@@ -174,4 +178,8 @@ void console_write(char *buf, u32 count)
 
 void console_init(void) {
     console_clear();
+//    short *ptr = (short *)pos;    //获取当前位置
+//    *ptr++ = 0xf848;              //往显存中写H
+//    *ptr++ = 0xf848;
+//    *ptr++ = 0xf848;
 }

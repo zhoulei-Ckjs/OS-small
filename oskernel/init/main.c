@@ -1,15 +1,13 @@
 #include "../include/linux/tty.h"
 #include "../include/linux/kernel.h"
+#include "../include/linux/traps.h"
 
 void kernel_main(void)
 {
-    console_init();
+    console_init();     //初始化控制台，清空屏幕
+    gdt_init();         //初始化gdt全局描述符表
 
-    char* s = "myos";
-
-    for (int i = 0; i < 20; ++i) {
-        printf("name: %s, age:%d\n", s, i);
-    }
+    printf("-------------\n");
 
     while (true);
 }

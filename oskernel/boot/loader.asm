@@ -7,9 +7,14 @@ KERNEL_ADDR equ 0x1200          ;内核的入口地址
 SEG_BASE equ 0
 SEG_LIMIT equ 0xfffff           ;20位寻址能力
 
+;显示器的地址和大小
+B8000_SEG_BASE equ 0xb8000
+B8000_SEG_LIMIT equ 0x7fff
+
 ;段选择子
 CODE_SELECTOR equ (1 << 3)      ;这里一个gdt描述符占8位，所以这是第一个即gdt_code的选择子
-DATA_SELECTOR equ (2 << 3)      ;同上，这是gdt_data的选择子
+DATA_SELECTOR equ (2 << 3)      ;同上，这是gdt_data的选择子、
+B8000_SELECTOR equ (3 << 3)     ;显示器的选择子
 
 gdt_base:
     dd 0, 0                     ;最开始的GDT表
@@ -20,7 +25,7 @@ gdt_code:
     ;    P_DPL_S_TYPE
     db 0b1_00_1_1000            ;段描述符有效_工作在ring0_非系统段_仅具有执行权限
     ;    G_DB_AVL_LIMIT
-    db 0b0_1_00_0000 | (SEG_LIMIT >> 16 & 0xf)      ;以字节为单位_32位段_非64位代码段_段界限（最高4位）
+    db 0b1_1_00_0000 | (SEG_LIMIT >> 16 & 0xf)      ;以4K为单位_32位段_非64位代码段_段界限（最高4位）
     db SEG_BASE >> 24 & 0xff    ;段基址
 gdt_data:
     dw SEG_LIMIT & 0xffff
@@ -31,6 +36,15 @@ gdt_data:
     ;    G_DB_AVL_LIMIT
     db 0b1_1_00_0000 | (SEG_LIMIT >> 16 & 0xf)      ;以4KB为单位_32位段_非64位代码段_段界限（最高4位）
     db SEG_BASE >> 24 & 0xff
+gdt_b8000:                                          ;显示器的gdt表
+    dw B8000_SEG_LIMIT & 0xffff
+    dw B8000_SEG_BASE & 0xffff
+    db B8000_SEG_BASE >> 16 & 0xff
+    ;    P_DPL_S_TYPE
+    db 0b1_00_1_0010            ;段描述符有效_工作在ring0_非系统段_仅具有只读权限
+    ;    G_DB_AVL_LIMIT
+    db 0b0_1_00_0000 | (B8000_SEG_LIMIT >> 16 & 0xf) ;以字节为单位_32位段_非64位代码段_段界限（最高4位）
+    db B8000_SEG_BASE >> 24 & 0xff
 gdt_ptr:
     dw $ - gdt_base - 1         ;这里应该是gdtlen - 1
     dd gdt_base                 ;GDT基地址
