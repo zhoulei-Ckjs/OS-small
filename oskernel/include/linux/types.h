@@ -1,3 +1,8 @@
+/*
+ * 对基本类型的定义
+ * */
+
+
 #ifndef OS_TYPES_H
 #define OS_TYPES_H
 

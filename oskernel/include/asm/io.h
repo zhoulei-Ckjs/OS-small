@@ -1,3 +1,7 @@
+/*
+ * io.asm 的头文件
+ * */
+
 #ifndef OS_IO_H
 #define OS_IO_H
 

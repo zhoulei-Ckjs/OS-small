@@ -1,9 +1,13 @@
+#include "../include/linux/tty.h"
+//#include "../include/linux/kernel.h"
+
 void kernel_main(void)
 {
-    int a = 0;
+    console_init();
 
-    *(char *)0x100000 = 0x11;
+    char* s = "myos";
 
-    char* video = (char*)0xb8000;
-    *video = 'G';
+    console_write(s, 5);
+
+    while (true);
 }
