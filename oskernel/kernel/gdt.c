@@ -77,6 +77,6 @@ void gdt_init() {
     gdt_ptr.base = &gdt;
     gdt_ptr.limit = sizeof(gdt) - 1;    //这里定义了gdt数组为256个，limit的计算为256 * 8 - 1
 
-    BOCHS_DEBUG_MAGIC
+    //BOCHS_DEBUG_MAGIC
     __asm__ volatile ("lgdt gdt_ptr;");
 }
