@@ -31,7 +31,8 @@ ${BUILD}/elf_kernel.bin: ${BUILD}/boot/kernel.o ${BUILD}/init/main.o ${BUILD}/ke
 	${BUILD}/kernel/gdt.o \
 	${BUILD}/kernel/idt.o ${BUILD}/kernel/asm/interrupt_handler.o \
 	${BUILD}/kernel/traps.o ${BUILD}/kernel/chr_drv/keyboard.o \
-	${BUILD}/kernel/exception.o
+	${BUILD}/kernel/exception.o \
+	${BUILD}/kernel/asm/clock_handler.o ${BUILD}/kernel/chr_drv/clock.o
 	ld -m elf_i386 $^ -o $@ -Ttext 0x1200
 
 ${BUILD}/kernel/%.o: oskernel/kernel/%.c

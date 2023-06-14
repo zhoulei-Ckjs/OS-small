@@ -14,8 +14,10 @@ xdt_ptr_t idt_ptr;
 extern void interrupt_handler_entry();
 // 键盘中断处理程序
 extern void keymap_handler_entry();
+// 时钟中断处理程序
+extern void clock_handler_entry();
 
-// 是在汇编中定义的中断处理程序
+// 是在汇编中定义的中断处理程序，0-19的系统保留中断
 extern int interrupt_handler_table[0x2f];
 
 //初始化中断向量表
@@ -32,6 +34,15 @@ void idt_init() {
         if (i <= 0x13) {        //系统保留的中断号，这里我认为是0x13
             handler = (int)interrupt_handler_table[i];
         }
+
+        /*
+         * 时钟中断，32号中断
+         * 在x86架构的计算机中，时钟中断的中断号为0x20，这个值是由Intel设计的8259A可编程中断控制器（PIC）所规定的。
+         * */
+        if (0x20 == i) {
+            handler = (int)clock_handler_entry;
+        }
+
         /*
          * 键盘中断程序,定义为33号中断
          * */
