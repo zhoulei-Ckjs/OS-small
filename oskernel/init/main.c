@@ -12,6 +12,9 @@ void kernel_main(void)
 
     __asm__("sti;");    //打开中断
 
+    //除零异常，引发软件中断
+    int i = 10 / 0;
+
     while (true);
 
 }
