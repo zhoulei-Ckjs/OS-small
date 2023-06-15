@@ -120,6 +120,7 @@ static void command_del()
 
 void console_write(char *buf, u32 count)
 {
+    CLI                             //关中断
     char ch;
     char *ptr = (char *)pos;
     while (count--)
@@ -174,6 +175,7 @@ void console_write(char *buf, u32 count)
         }
     }
     set_cursor();
+    STI                             //开中断
 }
 
 void console_init(void) {

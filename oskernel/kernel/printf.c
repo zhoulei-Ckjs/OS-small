@@ -1,9 +1,11 @@
 #include "../include/linux/kernel.h"
 #include "../include/linux/tty.h"
+#include "../include/asm/system.h"
 
 static char buf[1024];
 
 int printf(const char * fmt, ...) {
+    CLI             //关中断
     va_list args;
     int i;
 
@@ -13,5 +15,6 @@ int printf(const char * fmt, ...) {
 
     console_write(buf, i);
 
+    STI             //开中断
     return i;
 }

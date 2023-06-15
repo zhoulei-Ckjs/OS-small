@@ -11,8 +11,8 @@
 
 #define BOCHS_DEBUG_MAGIC   __asm__("xchg bx, bx");     //bochs断点
 
-#define STI   __asm__("sti");       //关中断
-#define CLI   __asm__("cli");       //开中断
+#define STI   __asm__("sti");       //开中断
+#define CLI   __asm__("cli");       //关中断
 
 /*
     定义字体颜色，往屏幕上写的时候
