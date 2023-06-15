@@ -4,6 +4,12 @@
 KERNEL_ADDR equ 0x1200          ;内核的入口地址
 
 ; 用于存储内存检测的数据
+; 检测后将检测的结果写道0x1100位置
+; 内存结构如图：
+; ------------------------------------------------
+; |   0x1100        一共多少块内存（两字节）        |
+; |   0x1102        存储ards数组（描述内存的数组）  |
+;-------------------------------------------------
 ARDS_TIMES_BUFFER equ 0x1100
 ARDS_BUFFER equ 0x1102          ;内存检测将每次检测的数据结果写到这个地址中
                                 ;是因为在某些计算机系统中，0x1100到0x1101这个地址范围已经被使用了。
@@ -97,8 +103,10 @@ memory_check:
     jne .loop
 
     mov ax, [ARDS_TIMES]            ; 保存内存检测次数
+
     mov [ARDS_TIMES_BUFFER], ax     ; 保存内存检测结果，一共进行了多少次20个字节的检测
     mov [CHECK_BUFFER_OFFSET], di   ; 保存offset
+xchg bx,bx
 
 .memory_check_success:
     mov si, memory_check_success_msg

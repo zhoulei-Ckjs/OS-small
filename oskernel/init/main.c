@@ -1,6 +1,7 @@
 #include "../include/linux/tty.h"
 #include "../include/linux/kernel.h"
 #include "../include/linux/traps.h"
+#include "../include/linux/mm.h"
 
 extern void clock_init();
 
@@ -11,13 +12,11 @@ void kernel_main(void)
     idt_init();         //初始化中断描符表
     clock_init();       //时钟中断初始化，设定10ms一次中断，可以到clock.c中设置
 
-    printf("-------kernel_main-------\n");
+    print_check_memory_info();      //内存的检测结果
 
     __asm__("sti;");    //打开中断
 
     //除零异常，引发软件中断
     //int i = 10 / 0;
-
     while (true);
-
 }
