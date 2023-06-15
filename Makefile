@@ -69,11 +69,16 @@ bochs: all
 	bochs -q -f bochsrc
 
 qemug: all
-	qemu-system-x86_64 -m 32M -hda ./build/os.img -S -s
+	#qemu-system-x86_64 -m 32M -hda ./build/os.img -S -s	#这个是运行在x64系统上的，x64也支持运行32位操作系统
+	qemu-system-i386 \
+    	-m 32M \
+    	-boot c \
+    	-hda ./build/os.img \
+    	-s -S
 
 qemu: all
 	qemu-system-i386 \
-	-m 32M \
+	-m 32M \						#32M内存
 	-boot c \
 	-hda ./build/os.img
 

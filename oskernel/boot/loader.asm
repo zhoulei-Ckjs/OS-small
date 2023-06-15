@@ -3,6 +3,18 @@
 [SECTION .data]
 KERNEL_ADDR equ 0x1200          ;内核的入口地址
 
+; 用于存储内存检测的数据
+ARDS_TIMES_BUFFER equ 0x1100
+ARDS_BUFFER equ 0x1102          ;内存检测将每次检测的数据结果写到这个地址中
+                                ;是因为在某些计算机系统中，0x1100到0x1101这个地址范围已经被使用了。
+                                ;具体来说，有些旧的计算机系统在这个地址范围中存储了一些自定义的数据结构或程序，
+                                ;如果从0x1100开始进行内存检测可能会破坏这些数据或程序。
+                                ;0x1100存储的是EBDA，为了防止破坏EBDA，所以从0x1102开始检测
+ARDS_TIMES dw 0             ;检测次数计数
+
+; 存储填充以后的offset，下次检测的结果接着写
+CHECK_BUFFER_OFFSET dw 0
+
 [SECTION .gdt]
 SEG_BASE equ 0
 SEG_LIMIT equ 0xfffff           ;20位寻址能力
@@ -64,6 +76,35 @@ loader_start:
     mov     si, prepare_enter_protected_mode_msg
     call    print
 
+; 内存检测
+memory_check:
+    xor ebx, ebx            ; ebx = 0
+    mov di, ARDS_BUFFER     ; es:di 指向一块内存   es因为前面已设置为0，这里不重复赋值
+
+.loop:
+    mov eax, 0xe820         ; ax = 0xe820
+    mov ecx, 20             ; ecx = 20
+    mov edx, 0x534D4150     ; edx = 0x534D4150
+    int 0x15
+
+    jc memory_check_error   ; 如果出错
+
+    add di, cx              ; 下次填充的结果存到下个结构体
+
+    inc dword [ARDS_TIMES]  ; 检测次数 + 1
+
+    cmp ebx, 0              ; 在检测的时候，ebx会被bios修改，ebx不为0就要继续检测，ebx=0表示检测结束
+    jne .loop
+
+    mov ax, [ARDS_TIMES]            ; 保存内存检测次数
+    mov [ARDS_TIMES_BUFFER], ax     ; 保存内存检测结果，一共进行了多少次20个字节的检测
+    mov [CHECK_BUFFER_OFFSET], di   ; 保存offset
+
+.memory_check_success:
+    mov si, memory_check_success_msg
+    call print
+
+;进入保护模式
 enter_protected_mode:
     ; 关中断
     cli
@@ -87,6 +128,13 @@ enter_protected_mode:
     mov   cr0, eax
 ;xchg bx,bx  ;---------------------------------------------------------------------------------
     jmp CODE_SELECTOR:protected_mode
+
+;内存出错打印信息
+memory_check_error:
+    mov     si, memory_check_error_msg
+    call    print
+
+    jmp $
 
 ; 如何调用
 ; mov     si, msg   ; 1 传入字符串
@@ -207,3 +255,9 @@ read_hd_data:
 
 prepare_enter_protected_mode_msg:
     db "Prepare to go into protected mode...", 10, 13, 0
+
+memory_check_error_msg:
+    db "memory check fail...", 10, 13, 0
+
+memory_check_success_msg:
+    db "memory check success...", 10, 13, 0
