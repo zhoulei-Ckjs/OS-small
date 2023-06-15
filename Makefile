@@ -33,7 +33,8 @@ ${BUILD}/elf_kernel.bin: ${BUILD}/boot/kernel.o ${BUILD}/init/main.o ${BUILD}/ke
 	${BUILD}/kernel/traps.o ${BUILD}/kernel/chr_drv/keyboard.o \
 	${BUILD}/kernel/exception.o \
 	${BUILD}/kernel/asm/clock_handler.o ${BUILD}/kernel/chr_drv/clock.o \
-	${BUILD}/mm/memory.o
+	${BUILD}/mm/memory.o \
+	${BUILD}/kernel/kernel.o ${BUILD}/mm/mm_101012.o
 	ld -m elf_i386 $^ -o $@ -Ttext 0x1200
 
 #内存检查部分

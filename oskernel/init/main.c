@@ -13,6 +13,9 @@ void kernel_main(void)
     clock_init();       //时钟中断初始化，设定10ms一次中断，可以到clock.c中设置
 
     print_check_memory_info();      //内存的检测结果
+    memory_init();                  //初始化内存
+    memory_map_int();               //对内存进行位图管理
+    virtual_memory_init();
 
     __asm__("sti;");    //打开中断
 

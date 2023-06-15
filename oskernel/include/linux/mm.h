@@ -29,7 +29,35 @@ typedef struct {
     check_memmory_item_t*   data;
 }check_memory_info_t;
 
+//用于接管BIOS内存统计的结果
+typedef struct {
+    uint    addr_start;     // 可用内存起始地址 一般是1M
+    uint    addr_end;       // 可用内存结束地址
+    uint    valid_mem_size;
+    uint    pages_total;    // 机器物理内存共多少page
+    uint    pages_free;     // 机器物理内存还剩多少page
+    uint    pages_used;     // 机器物理内存用了多少page
+}physics_memory_info_t;
+
+//
+typedef struct {
+    uint            addr_base;          // 可用物理内存开始位置  3M
+    uint            pages_total;        // 共有多少page   机器物理内存共多少page - 0x30000（3M）
+    uint            bitmap_item_used;  // 如果1B映射一个page，用了多少个page
+    uchar*          map;
+}physics_memory_map_t;
+
+//打印BIOS内存检测结果
 void print_check_memory_info();
+//初始化内存，统计可用内存起始地址，以及可以分多少页
+void memory_init();
+//初始化内存位图
+void memory_map_int();
+//初始化虚拟内存
+void virtual_memory_init();
+//获得空闲页表
+void* get_free_page();
+void free_page(void* p);
 
 #endif //ZIYA_OSKERNEL_TEACH_MM_H
 
