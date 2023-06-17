@@ -55,9 +55,12 @@ void memory_init();
 void memory_map_int();
 //初始化虚拟内存
 void virtual_memory_init();
-//获得空闲页表
+//获得空闲页表，分配、释放物理内存
 void* get_free_page();
 void free_page(void* p);
+
+//分配、释放虚拟内存
+void* malloc(size_t size);
 
 #endif //ZIYA_OSKERNEL_TEACH_MM_H
 

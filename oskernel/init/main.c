@@ -15,7 +15,14 @@ void kernel_main(void)
     print_check_memory_info();      //内存的检测结果
     memory_init();                  //初始化内存
     memory_map_int();               //对内存进行位图管理
-    virtual_memory_init();
+    virtual_memory_init();          //虚拟内存
+
+
+    // 测试分配虚拟内存
+    void* p = malloc(1);
+    p = malloc(1);
+    p = malloc(2);
+    p = malloc(4096);
 
     __asm__("sti;");    //打开中断
 
