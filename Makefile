@@ -19,7 +19,7 @@ all: ${BUILD}/boot/mbr.o ${BUILD}/boot/loader.o ${BUILD}/kernel.bin
 	bximage -q -hd=16 -func=create -sectsize=512 -imgmode=flat $(BUILD)/$(HD_IMG_NAME)
 	dd if=${BUILD}/boot/mbr.o of=$(BUILD)/$(HD_IMG_NAME) bs=512 seek=0 count=1 conv=notrunc
 	dd if=${BUILD}/boot/loader.o of=$(BUILD)/$(HD_IMG_NAME) bs=512 seek=1 count=2 conv=notrunc
-	dd if=${BUILD}/kernel.bin of=$(BUILD)/$(HD_IMG_NAME) bs=512 seek=3 count=60 conv=notrunc
+	dd if=${BUILD}/kernel.bin of=$(BUILD)/$(HD_IMG_NAME) bs=512 seek=3 count=50 conv=notrunc
 
 ${BUILD}/kernel.bin: ${BUILD}/elf_kernel.bin
 	objcopy -O binary ${BUILD}/elf_kernel.bin ${BUILD}/kernel.bin
@@ -35,7 +35,8 @@ ${BUILD}/elf_kernel.bin: ${BUILD}/boot/kernel.o ${BUILD}/init/main.o ${BUILD}/ke
 	${BUILD}/kernel/asm/clock_handler.o ${BUILD}/kernel/chr_drv/clock.o \
 	${BUILD}/mm/memory.o \
 	${BUILD}/kernel/kernel.o ${BUILD}/mm/mm_101012.o \
-	${BUILD}/mm/malloc.o
+	${BUILD}/mm/malloc.o \
+	${BUILD}/kernel/task.o ${BUILD}/kernel/sched.o
 	ld -m elf_i386 $^ -o $@ -Ttext 0x1200
 
 #内存检查部分

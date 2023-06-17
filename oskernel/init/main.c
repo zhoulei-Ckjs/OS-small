@@ -2,6 +2,8 @@
 #include "../include/linux/kernel.h"
 #include "../include/linux/traps.h"
 #include "../include/linux/mm.h"
+#include "../include/linux/task.h"
+#include "../include/linux/sched.h"
 
 extern void clock_init();
 
@@ -15,7 +17,10 @@ void kernel_main(void)
     print_check_memory_info();      //内存的检测结果
     memory_init();                  //初始化内存
     memory_map_int();               //对内存进行位图管理
-    virtual_memory_init();          //虚拟内存
+
+    //virtual_memory_init();          //虚拟内存
+    task_init();
+    sched();                        //任务调度
 
 
     // 测试分配虚拟内存

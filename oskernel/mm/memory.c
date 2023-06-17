@@ -58,7 +58,8 @@ void memory_map_int() {
     }
 
     g_physics_memory_map.addr_base = (uint)VALID_MEMORY_FROM;
-    g_physics_memory_map.map = (uchar*)VALID_MEMORY_FROM;       //将初始的内存作为内存map位管理，1B映射一个内存页（4096B）
+//    g_physics_memory_map.map = (uchar*)VALID_MEMORY_FROM;       //将初始的内存作为内存map位管理，1B映射一个内存页（4096B）
+    g_physics_memory_map.map = (uchar*)0x10000;       //将bitmap放到BIOS的0x10000的地址
 
     // 共有这么多物理页可用
     g_physics_memory_map.pages_total = g_physics_memory.pages_total;
@@ -66,26 +67,30 @@ void memory_map_int() {
     // 清零
     memset(g_physics_memory_map.map, 0, g_physics_memory_map.pages_total);
 
-    // 1B映射一个page，共需要这么多page，如8196个page即需要8196B，一个page为4096B，共需要2个page
-    g_physics_memory_map.bitmap_item_used = g_physics_memory_map.pages_total / PAGE_SIZE;
-    if (0 != g_physics_memory_map.pages_total % PAGE_SIZE) {
-        g_physics_memory_map.bitmap_item_used += 1;
-    }
+/*
+ * 下面是将bitmap放到BIOS以外的代码，上面将bitmap放到了BIOS的地址0x10000
+ * */
+        // 1B映射一个page，共需要这么多page，如8196个page即需要8196B，一个page为4096B，共需要2个page
+        /*    g_physics_memory_map.bitmap_item_used = g_physics_memory_map.pages_total / PAGE_SIZE;
+            if (0 != g_physics_memory_map.pages_total % PAGE_SIZE) {
+                g_physics_memory_map.bitmap_item_used += 1;
+            }
 
-    //存储Bitmap需要多少个页表，这部分在map中要标记已经使用了
-    for (int i = 0; i < g_physics_memory_map.bitmap_item_used; ++i) {
-        g_physics_memory_map.map[i] = 1;
-    }
+            //存储Bitmap需要多少个页表，这部分在map中要标记已经使用了
+            for (int i = 0; i < g_physics_memory_map.bitmap_item_used; ++i) {
+                g_physics_memory_map.map[i] = 1;
+            }
 
-    printf("physics memory map position: 0x%X(%dM) - 0x%X(%dM)\n",
-           g_physics_memory_map.map,
-           ((int)g_physics_memory_map.map) / 1024 / 1024,
-           g_physics_memory_map.addr_base,
-           g_physics_memory_map.addr_base / 1024 / 1024);
+            printf("physics memory map position: 0x%X(%dM) - 0x%X(%dM)\n",
+                   g_physics_memory_map.map,
+                   ((int)g_physics_memory_map.map) / 1024 / 1024,
+                   g_physics_memory_map.addr_base,
+                   g_physics_memory_map.addr_base / 1024 / 1024);
 
-    printf("physical memory starts here: 0x%X(%dM), used: %d pages\n",
-           g_physics_memory_map.addr_base, g_physics_memory_map.addr_base / 1024 / 1024,
-           g_physics_memory_map.bitmap_item_used);
+            printf("physical memory starts here: 0x%X(%dM), used: %d pages\n",
+                   g_physics_memory_map.addr_base, g_physics_memory_map.addr_base / 1024 / 1024,
+                   g_physics_memory_map.bitmap_item_used);
+        */
 }
 
 
