@@ -20,9 +20,13 @@ void kernel_main(void)
 
     // 测试分配虚拟内存
     void* p = malloc(1);
+    free_s(p, 1);
     p = malloc(1);
+    free_s(p, 1);
     p = malloc(2);
+    free_s(p, 2);
     p = malloc(4096);
+    free_s(p, 4096);
 
     __asm__("sti;");    //打开中断
 

@@ -61,6 +61,7 @@ void free_page(void* p);
 
 //分配、释放虚拟内存
 void* malloc(size_t size);
+void free_s(void *obj, int size);
 
 #endif //ZIYA_OSKERNEL_TEACH_MM_H
 

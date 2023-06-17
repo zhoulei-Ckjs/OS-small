@@ -121,3 +121,60 @@ void* malloc(size_t len) {
     STI	/* OK, we're safe again */
     return(retval);
 }
+
+/*
+ * 为了实现free自动识别要释放的内存大小，我们要增加一个标记，在我们malloc的时候都是以一个page作为一个桶的一部分
+ * 回想get_free_page的时候，我们以1B作为一个页是否被用的标记，这个1B完全可以存储这个页属于哪个桶
+ * 另一种思想是在待分配的物理页首地址处写上大小，但是这样的话4096大小和2048等就不好弄了
+ * 有待去实现自动识别的free...
+ */
+void free_s(void *obj, int size)
+{
+    void		*page;
+    struct _bucket_dir	*bdir;
+    struct bucket_desc	*bdesc, *prev;
+    bdesc = prev = 0;
+    //计算这个页属于哪个页
+    page = (void *)  ((unsigned long) obj & 0xfffff000);
+    /* Now search the buckets looking for that page */
+    for (bdir = bucket_dir; bdir->size; bdir++) {
+        prev = 0;
+        /* If size is zero then this conditional is always false */
+        if (bdir->size < size)
+            continue;
+        for (bdesc = bdir->chain; bdesc; bdesc = bdesc->next) {
+            if (bdesc->page == page)
+                goto found;
+            prev = bdesc;
+        }
+    }
+    return;
+found:
+    CLI
+    //头插法，将待释放的内存放到空闲链表头部
+    *((void **)obj) = bdesc->freeptr;
+    bdesc->freeptr = obj;
+    bdesc->refcnt--;
+    if (bdesc->refcnt == 0) {
+        /*
+         * 要再进行判断一下，确保找到的bucket_descriptor是正确的
+         */
+        if ((prev && (prev->next != bdesc)) || (!prev && (bdir->chain != bdesc)))
+            for (prev = bdir->chain; prev; prev = prev->next)
+                if (prev->next == bdesc)
+                    break;
+        if (prev)   //也是头插法，将空闲的bucket_descriptor插到空闲描述符头
+            prev->next = bdesc->next;
+        else {
+            if (bdir->chain != bdesc)   //这不可能，我们prev是空，但是p不是桶链表的头
+                return;
+            bdir->chain = bdesc->next;
+        }
+        //要释放内存物理页，因为refcnt(引用计数)已经为0了
+        free_page((unsigned long) bdesc->page);
+        bdesc->next = free_bucket_desc;     //这个描述符也要放到空闲描述符表
+        free_bucket_desc = bdesc;
+    }
+    STI
+    return;
+}
