@@ -36,7 +36,8 @@ ${BUILD}/elf_kernel.bin: ${BUILD}/boot/kernel.o ${BUILD}/init/main.o ${BUILD}/ke
 	${BUILD}/mm/memory.o \
 	${BUILD}/kernel/kernel.o ${BUILD}/mm/mm_101012.o \
 	${BUILD}/mm/malloc.o \
-	${BUILD}/kernel/task.o ${BUILD}/kernel/sched.o
+	${BUILD}/kernel/task.o ${BUILD}/kernel/sched.o \
+	${BUILD}/kernel/asm/sched.o
 	ld -m elf_i386 $^ -o $@ -Ttext 0x1200
 
 #内存检查部分

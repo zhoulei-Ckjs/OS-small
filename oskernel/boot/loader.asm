@@ -106,7 +106,7 @@ memory_check:
 
     mov [ARDS_TIMES_BUFFER], ax     ; 保存内存检测结果，一共进行了多少次20个字节的检测
     mov [CHECK_BUFFER_OFFSET], di   ; 保存offset
-xchg bx,bx
+;xchg bx,bx
 
 .memory_check_success:
     mov si, memory_check_success_msg

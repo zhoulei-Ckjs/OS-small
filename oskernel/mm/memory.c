@@ -113,7 +113,8 @@ void print_check_memory_info() {
 }
 
 //获得空闲页
-void* get_free_page() {
+void* get_free_page()
+{
     bool find = false;
 
     int i = g_physics_memory_map.bitmap_item_used;
