@@ -2,6 +2,7 @@
 #include "../include/linux/kernel.h"
 #include "../include/linux/mm.h"
 #include "../include/string.h"
+#include "../include/linux/task.h"
 
 // 页表从0x20000开始存
 #define PDT_START_ADDR 0x20000

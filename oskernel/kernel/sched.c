@@ -1,10 +1,18 @@
 #include "../include/linux/sched.h"
 #include "../include/linux/task.h"
+#include "../include/linux/kernel.h"
+#include "../include/asm/system.h"
 
 /*
  * sched.asm中
  */
 extern void switch_idle_task(task_t* task);
+
+/*
+ * 进行下一个任务的切换
+ * 在sched.asm中
+ */
+extern void switch_task(task_t* task);
 
 extern task_t* tasks[NR_TASKS];
 
@@ -36,11 +44,14 @@ void sched()
 {
     task_t* next = find_ready_task();
 
-    if (NULL == next) {
+    if (NULL == next)                   //为空就return
+    {
         current = tasks[0];
-
-        switch_idle_task(current);
-
+        switch_idle_task(tasks[0]);
         return;
     }
+
+    next->state = TASK_RUNNING;         //下一个进程的是运行状态
+    current = next;
+    switch_task(next);
 }

@@ -18,24 +18,10 @@ void kernel_main(void)
     memory_init();                  //初始化内存
     memory_map_int();               //对内存进行位图管理
 
-    //virtual_memory_init();          //虚拟内存
     task_init();
     sched();                        //任务调度
 
-
-    // 测试分配虚拟内存
-    void* p = malloc(1);
-    free_s(p, 1);
-    p = malloc(1);
-    free_s(p, 1);
-    p = malloc(2);
-    free_s(p, 2);
-    p = malloc(4096);
-    free_s(p, 4096);
-
     __asm__("sti;");    //打开中断
 
-    //除零异常，引发软件中断
-    //int i = 10 / 0;
     while (true);
 }

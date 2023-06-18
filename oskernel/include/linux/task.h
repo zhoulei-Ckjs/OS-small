@@ -1,6 +1,7 @@
 #ifndef OS_TASK_H
 #define OS_TASK_H
 
+#include "types.h"
 #include "mm.h"
 
 // 进程上限
@@ -97,5 +98,13 @@ typedef union task_union_t {
 task_t* create_task(char* name, task_fun_t fun, int priority);
 
 void task_init();                       //初始化task
+
+// 退出任务
+void task_exit(int code, task_t* task);
+// 让这个进程的已经执行的时间片增加
+int inc_scheduling_times(task_t* task);
+// 获取父进程id
+pid_t get_task_ppid(task_t* task);
+
 
 #endif //OS_TASK_H

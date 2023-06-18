@@ -2,6 +2,7 @@
 #include "../include/linux/task.h"
 #include "../include/linux/mm.h"
 #include "../include/string.h"
+#include "../include/linux/sched.h"
 
 extern task_t* current;
 
@@ -73,18 +74,24 @@ task_t* create_task(char* name, task_fun_t fun, int priority)
 }
 
 /*
+ * 一个临时的任务
+ */
+void* t1_fun(void* arg)
+{
+    printk("t1\n");
+}
+
+/*
  * 实际任务
  */
 void* idle(void* arg)
 {
-    printk("#1 idle task running...\n");
+    create_task("t1", t1_fun, 1);   //创建一个任务
 
     while (true)
     {
         printk("#2 idle task running...\n");
-
-        __asm__ volatile ("sti;");      //开中断
-        __asm__ volatile ("hlt;");      //CPU 停止执行指令，直到有中断到来
+        sched();                                    //进行任务调度
     }
 }
 
@@ -94,4 +101,47 @@ void* idle(void* arg)
 void task_init()
 {
     create_task("idle", idle, 1);
+}
+
+/*
+ * 获取父进程id
+ */
+pid_t get_task_ppid(task_t* task)
+{
+    return task->ppid;
+}
+
+/*
+ * 让这个进程的已经执行的时间片增加
+ */
+int inc_scheduling_times(task_t* task)
+{
+    return task->scheduling_times++;
+}
+
+/*
+ * 退出进程
+ */
+void task_exit(int code, task_t* task)
+{
+    for (int i = 1; i < NR_TASKS; ++i)
+    {
+        task_t* tmp = tasks[i];
+
+        if (task == tmp)
+        {
+            printk("task exit: %s\n", tmp->name);
+
+            tmp->exit_code = code;
+
+            // 先移除，后面有父子进程再相应处理
+            tasks[i] = NULL;
+
+            current = NULL;
+
+            free_s(tmp, 4096);      //这里是因为在申请空间的时候就申请了4096，见本文件的create_task函数
+
+            break;
+        }
+    }
 }
