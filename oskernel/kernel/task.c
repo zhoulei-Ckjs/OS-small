@@ -59,7 +59,7 @@ task_t* create_task(char* name, task_fun_t fun, int priority)
     task->task.priority = priority;
     task->task.counter = priority;
 
-    ->task.scheduling_times = 0xa;
+    task->task.scheduling_times = 0;
 
     strcpy(task->task.name, name);
 
@@ -144,7 +144,7 @@ pid_t get_task_ppid(task_t* task)
 /*
  * 让这个进程的已经执行的时间片增加
  */
-int inc_scheduling_times(task_t* task)              //这里有个bug，传递的是pid_t，而非task_t*
+int inc_scheduling_times(task_t* task)
 {
     return task->scheduling_times++;
 }
