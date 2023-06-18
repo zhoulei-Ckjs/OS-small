@@ -1,3 +1,4 @@
+#include "../include/linux/kernel.h"
 #include "../include/linux/task.h"
 #include "../include/linux/mm.h"
 #include "../include/string.h"
@@ -32,7 +33,7 @@ int find_empty_process()
 
     if (!is_finded)
     {
-        printf("no valid pid\n");
+        printk("no valid pid\n");
         return -1;
     }
 
@@ -76,11 +77,11 @@ task_t* create_task(char* name, task_fun_t fun, int priority)
  */
 void* idle(void* arg)
 {
-    printf("#1 idle task running...\n");
+    printk("#1 idle task running...\n");
 
     while (true)
     {
-        printf("#2 idle task running...\n");
+        printk("#2 idle task running...\n");
 
         __asm__ volatile ("sti;");      //开中断
         __asm__ volatile ("hlt;");      //CPU 停止执行指令，直到有中断到来

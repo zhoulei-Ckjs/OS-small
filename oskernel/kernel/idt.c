@@ -22,7 +22,7 @@ extern int interrupt_handler_table[0x2f];
 
 //初始化中断向量表
 void idt_init() {
-    printf("init idt...\n");
+    printk("init idt...\n");
     for (int i = 0; i < INTERRUPT_TABLE_SIZE; ++i) {
         interrupt_gate_t* p = &interrupt_table[i];
 

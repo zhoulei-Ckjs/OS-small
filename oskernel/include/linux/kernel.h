@@ -6,7 +6,7 @@
 #include "types.h"
 
 int vsprintf(char *buf, const char *fmt, va_list args);
-int printf(const char * fmt, ...);
+int printk(const char * fmt, ...);
 
 //
 uint get_cr3();

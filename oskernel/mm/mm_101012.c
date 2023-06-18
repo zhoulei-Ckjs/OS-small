@@ -54,7 +54,7 @@ void *virtual_memory_init() {
 
     BOCHS_DEBUG_MAGIC
 
-    printf("pdt addr: 0x%p\n", pdt);
+    printk("pdt addr: 0x%p\n", pdt);
 
     return pdt;
 }

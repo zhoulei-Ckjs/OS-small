@@ -1,7 +1,7 @@
 [bits 32]
 [SECTION .text]
 
-extern printf
+extern printk
 extern keymap_handler       ;中断处理程序
 extern exception_handler    ;异常处理程序
 
@@ -9,7 +9,7 @@ extern exception_handler    ;异常处理程序
 global interrupt_handler_entry
 interrupt_handler_entry:
     push msg
-    call printf
+    call printk
     add esp, 4              ;平栈
 
     iret

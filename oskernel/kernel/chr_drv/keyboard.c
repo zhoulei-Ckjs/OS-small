@@ -337,5 +337,5 @@ void keymap_handler(int idt_index) {
     if (ch == INV)
         return;
 
-    printf("%c", ch);
+    printk("%c", ch);
 }

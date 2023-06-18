@@ -80,7 +80,7 @@ void* malloc(size_t len) {
             break;
     // 找到了最后一个都没找到大于这个空间的内存，说明申请的内存 大于 4096 byte
     if (!bdir->size) {
-        printf("malloc called with impossibly large argument (%d)\n", len);
+        printk("malloc called with impossibly large argument (%d)\n", len);
         return NULL;
     }
 

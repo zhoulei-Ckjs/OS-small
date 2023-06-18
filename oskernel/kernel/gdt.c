@@ -15,7 +15,7 @@ int r3_data_selector;
 static void r3_gdt_code_item(int gdt_index, int base, int limit) {
     // 在实模式时已经构建了4个全局描述符，所以从4开始
     if (gdt_index < 4) {
-        printf("the gdt_index:%d has been used...\n", gdt_index);
+        printk("the gdt_index:%d has been used...\n", gdt_index);
         return;
     }
 
@@ -38,7 +38,7 @@ static void r3_gdt_code_item(int gdt_index, int base, int limit) {
 static void r3_gdt_data_item(int gdt_index, int base, int limit) {
     // 在实模式时已经构建了4个全局描述符，所以从4开始
     if (gdt_index < 4) {
-        printf("the gdt_index:%d has been used...\n", gdt_index);
+        printk("the gdt_index:%d has been used...\n", gdt_index);
         return;
     }
 
@@ -59,7 +59,7 @@ static void r3_gdt_data_item(int gdt_index, int base, int limit) {
 }
 
 void gdt_init() {
-    printf("init gdt...\n");
+    printk("init gdt...\n");
 
     //执行了SGDT指令，将global descriptor table（GDT）的限制（limit）和基址（base address）加载到gdt_ptr变量中
     __asm__ volatile ("sgdt gdt_ptr;");

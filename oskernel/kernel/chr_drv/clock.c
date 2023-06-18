@@ -33,6 +33,6 @@ static int val;
 void clock_handler(int idt_index) {
     //send_eoi(idt_index);
 
-    printf("0x%x\n", idt_index + val);
+    printk("0x%x\n", idt_index + val);
     val += 1;
 }

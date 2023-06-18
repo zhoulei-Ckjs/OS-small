@@ -1,7 +1,7 @@
 [bits 32]
 [SECTION .text]
 
-extern printf
+extern printk
 extern clock_handler
 
 global clock_handler_entry

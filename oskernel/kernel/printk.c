@@ -4,7 +4,7 @@
 
 static char buf[1024];
 
-int printf(const char * fmt, ...) {
+int printk(const char * fmt, ...) {
     CLI             //关中断
     va_list args;
     int i;

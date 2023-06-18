@@ -27,7 +27,7 @@ ${BUILD}/kernel.bin: ${BUILD}/elf_kernel.bin
 	#elf_kernel是包含调试符号的
 
 ${BUILD}/elf_kernel.bin: ${BUILD}/boot/kernel.o ${BUILD}/init/main.o ${BUILD}/kernel/asm/io.o \
-	${BUILD}/kernel/chr_drv/console.o ${BUILD}/lib/string.o ${BUILD}/kernel/printf.o ${BUILD}/kernel/vsprintf.o \
+	${BUILD}/kernel/chr_drv/console.o ${BUILD}/lib/string.o ${BUILD}/kernel/printk.o ${BUILD}/kernel/vsprintf.o \
 	${BUILD}/kernel/gdt.o \
 	${BUILD}/kernel/idt.o ${BUILD}/kernel/asm/interrupt_handler.o \
 	${BUILD}/kernel/traps.o ${BUILD}/kernel/chr_drv/keyboard.o \

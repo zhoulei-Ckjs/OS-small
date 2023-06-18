@@ -40,7 +40,7 @@ void memory_init() {
     // BIOS和其他硬件设备使用的地址空间范围是0xA0000到0xFFFFF，这部分被称为"高端内存"（High Memory）。
     // 因此，在BIOS检测可用内存时，它从0x100000开始扫描，以查找可用的高端内存空间。
     if (VALID_MEMORY_FROM != g_physics_memory.addr_start) {
-        printf("[%s:%d] no valid physics memory\n", __FILE__, __LINE__);
+        printk("[%s:%d] no valid physics memory\n", __FILE__, __LINE__);
         return;
     }
 
@@ -53,7 +53,7 @@ void memory_init() {
 void memory_map_int() {
     // 验证
     if (VALID_MEMORY_FROM != g_physics_memory.addr_start) {
-        printf("[%s:%d] no valid physics memory\n", __FILE__, __LINE__);
+        printk("[%s:%d] no valid physics memory\n", __FILE__, __LINE__);
         return;
     }
 
@@ -81,13 +81,13 @@ void memory_map_int() {
                 g_physics_memory_map.map[i] = 1;
             }
 
-            printf("physics memory map position: 0x%X(%dM) - 0x%X(%dM)\n",
+            printk("physics memory map position: 0x%X(%dM) - 0x%X(%dM)\n",
                    g_physics_memory_map.map,
                    ((int)g_physics_memory_map.map) / 1024 / 1024,
                    g_physics_memory_map.addr_base,
                    g_physics_memory_map.addr_base / 1024 / 1024);
 
-            printf("physical memory starts here: 0x%X(%dM), used: %d pages\n",
+            printk("physical memory starts here: 0x%X(%dM), used: %d pages\n",
                    g_physics_memory_map.addr_base, g_physics_memory_map.addr_base / 1024 / 1024,
                    g_physics_memory_map.bitmap_item_used);
         */
@@ -101,15 +101,15 @@ void print_check_memory_info() {
 
     unsigned short times = p->times;                                        //获取一共有多少块内存块
 
-    printf("====== memory check info =====\n");
+    printk("====== memory check info =====\n");
     //遍历ards数组，将内存信息打印出来
     for (int i = 0; i < times; ++i) {
         check_memmory_item_t* tmp = p_data + i;
 
-        printf("\t %x, %x, %x, %x, %d\n", tmp->base_addr_high, tmp->base_addr_low,
+        printk("\t %x, %x, %x, %x, %d\n", tmp->base_addr_high, tmp->base_addr_low,
                tmp->length_high, tmp->length_low, tmp->type);
     }
-    printf("====== memory check info =====\n");
+    printk("====== memory check info =====\n");
 }
 
 //获得空闲页
@@ -126,7 +126,7 @@ void* get_free_page()
     }
 
     if (!find) {
-        printf("memory used up!");
+        printk("memory used up!");
         return NULL;
     }
 
@@ -135,14 +135,14 @@ void* get_free_page()
 
     void* ret = (void*)(g_physics_memory_map.addr_base + (i << 12));
 
-    printf("[%s]return: 0x%X, used: %d pages\n", __FUNCTION__, ret, g_physics_memory_map.bitmap_item_used);
+    printk("[%s]return: 0x%X, used: %d pages\n", __FUNCTION__, ret, g_physics_memory_map.bitmap_item_used);
 
     return ret;
 }
 
 void free_page(void* p) {
     if (p < g_physics_memory.addr_start || p > g_physics_memory.addr_end) {
-        printf("invalid address!");
+        printk("invalid address!");
         return;
     }
 
@@ -151,5 +151,5 @@ void free_page(void* p) {
     g_physics_memory_map.map[index] = 0;
     g_physics_memory_map.bitmap_item_used--;
 
-    printf("[%s]return: 0x%X, used: %d pages\n", __FUNCTION__, p, g_physics_memory_map.bitmap_item_used);
+    printk("[%s]return: 0x%X, used: %d pages\n", __FUNCTION__, p, g_physics_memory_map.bitmap_item_used);
 }

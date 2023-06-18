@@ -28,26 +28,26 @@ char *messages[] = {
 
 void div_zero_exception(int idt_index) {
     char* msg = messages[idt_index];
-    printf("%s\n", msg);
+    printk("%s\n", msg);
 }
 
 // 13 一般性保护异常
 void normal_protect_exception(int idt_index) {
-    printf("%s\n", messages[idt_index]);
+    printk("%s\n", messages[idt_index]);
 }
 
 //打印中断信息
 //idt_index是中断索引
 void exception_handler(int idt_index, int edi, int esi, int ebp, int esp,
                        int ebx, int edx, int ecx, int eax, int eip, char cs, int eflags) {
-    printf("\n==========\n");
-    printf("EXCEPTION : %s \n", messages[idt_index]);
-    printf("   VECTOR : 0x%02X\n", idt_index);
-    printf("   EFLAGS : 0x%08X\n", eflags);
-    printf("       CS : 0x%02X\n", cs);
-    printf("      EIP : 0x%08X\n", eip);
-    printf("      ESP : 0x%08X\n", esp);
-    printf("==========\n");
+    printk("\n==========\n");
+    printk("EXCEPTION : %s \n", messages[idt_index]);
+    printk("   VECTOR : 0x%02X\n", idt_index);
+    printk("   EFLAGS : 0x%08X\n", eflags);
+    printk("       CS : 0x%02X\n", cs);
+    printk("      EIP : 0x%08X\n", eip);
+    printk("      ESP : 0x%08X\n", esp);
+    printk("==========\n");
 
     while (true);
 }

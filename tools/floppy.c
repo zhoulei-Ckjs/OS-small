@@ -44,7 +44,7 @@ void write_floppy_fileinfo(Floppy* floppy, Fileinfo* fileinfo, int face, int tra
     char* offset = 0;
 
     if (fileinfo->size > 512) {
-        printf("[%s] 文件大小超过 512: %d\n", fileinfo->name, fileinfo->size);
+        printk("[%s] 文件大小超过 512: %d\n", fileinfo->name, fileinfo->size);
     }
 
     offset = floppy->content + (section - 1) * 512;
