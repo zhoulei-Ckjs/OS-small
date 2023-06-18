@@ -37,9 +37,9 @@ typedef struct tss_t
     u32 esp2;     // ring2 的栈顶地址
     u32 ss2;      // ring2 的栈段选择子
     u32 cr3;
-    u32 eip;        //指向程序下一条指令的地址
+    u32 eip;        //当前任务的下一条指令的地址
     u32 flags;
-    u32 eax;
+    u32 eax;        //当前任务的寄存器----下面都是
     u32 ecx;
     u32 edx;
     u32 ebx;
@@ -71,7 +71,7 @@ typedef struct task_t
     char            name[32];
     task_state_t    state;
     int             exit_code;
-    int             counter;
+    int             counter;                // 当前任务要执行几个时间片，等于优先级
     int             priority;
     int             scheduling_times;       // 调度次数
     int             esp0;                   // 刚开始创建的时候 活动的esp3保存在tss中
@@ -101,6 +101,13 @@ void task_init();                       //初始化task
 
 // 退出任务
 void task_exit(int code, task_t* task);
+/**
+ * 让task进行睡眠
+ * @param ms
+ */
+void task_sleep(int ms);
+// 唤醒正在睡眠的任务
+void task_wakeup();
 // 让这个进程的已经执行的时间片增加
 int inc_scheduling_times(task_t* task);
 // 获取父进程id

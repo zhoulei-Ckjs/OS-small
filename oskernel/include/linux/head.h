@@ -30,8 +30,8 @@ typedef struct gdt_selector_t {
 //用于存储gdt的基地址和大小
 #pragma pack(2)
 typedef struct xdt_ptr_t {
-    short   limit;      //gdt表大小
-    int     base;       // 这个base需要大端存储，默认是小端存储
+    short   limit;      // gdt表大小
+    int     base;       // 基地址，这个base需要大端存储，默认是小端存储
 } xdt_ptr_t;
 #pragma pack()
 

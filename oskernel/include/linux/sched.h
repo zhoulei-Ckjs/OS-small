@@ -6,4 +6,9 @@
  */
 void sched();
 
+/*
+ * 一个时间片到了，要做一些处理
+ */
+void do_timer();
+
 #endif //OS_SCHED_H

@@ -16,7 +16,8 @@ void send_eoi(int idt_index) {
     }
 }
 
-void write_xdt_ptr(xdt_ptr_t* p, short limit, int base) {
+void write_xdt_ptr(xdt_ptr_t* p, short limit, int base)
+{
     p->limit = limit;
     p->base = base;
 }

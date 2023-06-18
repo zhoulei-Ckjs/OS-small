@@ -5,6 +5,10 @@
 #include "../include/linux/sched.h"
 
 extern task_t* current;
+extern int jiffy;
+extern int cpu_tickes;
+
+extern void sched_task();
 
 /*
  * 所有的task
@@ -52,7 +56,10 @@ task_t* create_task(char* name, task_fun_t fun, int priority)
     task->task.pid = find_empty_process();
     task->task.ppid = (NULL == current)? 0 : current->pid;  //父进程PID
 
-    task->task.scheduling_times = 0;
+    task->task.priority = priority;
+    task->task.counter = priority;
+
+    ->task.scheduling_times = 0xa;
 
     strcpy(task->task.name, name);
 
@@ -74,11 +81,31 @@ task_t* create_task(char* name, task_fun_t fun, int priority)
 }
 
 /*
- * 一个临时的任务
+ * 临时的任务
  */
 void* t1_fun(void* arg)
 {
-    printk("t1\n");
+    for (int i = 0; i < 0xffffffff; ++i)
+    {
+        printk("t1: %d\n", i);
+        task_sleep(1000);
+    }
+}
+void* t2_fun(void* arg)
+{
+    for (int i = 0; i < 0xffffffff; ++i)
+    {
+        printk("t2: %d\n", i);
+        task_sleep(500);
+    }
+}
+void* t3_fun(void* arg)
+{
+    for (int i = 0; i < 0xffffffff; ++i)
+    {
+        printk("t3: %d\n", i);
+        task_sleep(300);
+    }
 }
 
 /*
@@ -87,11 +114,14 @@ void* t1_fun(void* arg)
 void* idle(void* arg)
 {
     create_task("t1", t1_fun, 1);   //创建一个任务
+    create_task("t2", t2_fun, 2);
+    create_task("t3", t3_fun, 3);
 
-    while (true)
-    {
-        printk("#2 idle task running...\n");
-        sched();                                    //进行任务调度
+    while (true) {
+//        printk("idle task running...\n");
+
+        __asm__ volatile ("sti;");
+        __asm__ volatile ("hlt;");
     }
 }
 
@@ -100,7 +130,7 @@ void* idle(void* arg)
  */
 void task_init()
 {
-    create_task("idle", idle, 1);
+    create_task("idle", idle, 0);
 }
 
 /*
@@ -114,7 +144,7 @@ pid_t get_task_ppid(task_t* task)
 /*
  * 让这个进程的已经执行的时间片增加
  */
-int inc_scheduling_times(task_t* task)
+int inc_scheduling_times(task_t* task)              //这里有个bug，传递的是pid_t，而非task_t*
 {
     return task->scheduling_times++;
 }
@@ -142,6 +172,50 @@ void task_exit(int code, task_t* task)
             free_s(tmp, 4096);      //这里是因为在申请空间的时候就申请了4096，见本文件的create_task函数
 
             break;
+        }
+    }
+}
+
+/**
+ * 让task休眠
+ * @param ms
+ */
+void task_sleep(int ms)
+{
+    CLI
+
+    if (NULL == current)
+    {
+        printk("task sleep: current task is null\n");
+        return;
+    }
+
+    int ticks = ms / jiffy;
+    ticks += (0 == ms % jiffy)? 0 : 1;
+
+    current->counter = cpu_tickes + ticks;      //这里是什么？
+    current->state = TASK_SLEEPING;
+
+    sched_task();
+}
+
+/*
+ * 唤醒task
+ */
+void task_wakeup()
+{
+    for (int i = 1; i < NR_TASKS; ++i)
+    {
+        task_t* task = tasks[i];
+
+        if (NULL == task) continue;
+        if (TASK_SLEEPING != task->state) continue;
+
+        //正在睡眠的task要执行下面的代码
+        if (cpu_tickes >= task->counter)
+        {
+            task->state = TASK_READY;
+            task->counter = task->priority;
         }
     }
 }

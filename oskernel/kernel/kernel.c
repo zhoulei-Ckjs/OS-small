@@ -4,7 +4,8 @@ inline uint get_cr3() {
     asm volatile("mov eax, cr3;");
 }
 
-inline void set_cr3(uint v) {
+inline void set_cr3(uint v)
+{
     asm volatile("mov cr3, eax;" ::"a"(v));     //a表示eax寄存器，将v给eax，然后给cr3
 }
 

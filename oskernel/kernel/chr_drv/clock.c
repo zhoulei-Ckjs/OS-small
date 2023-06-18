@@ -1,5 +1,8 @@
 #include "../../include/linux/kernel.h"
 #include "../../include/linux/traps.h"
+#include "../../include/asm/io.h"
+#include "../../include/linux/sched.h"
+#include "../../include/linux/task.h"
 
 
 #define PIT_CHAN0_REG 0X40
@@ -11,12 +14,13 @@
 #define CLOCK_COUNTER (OSCILLATOR / HZ)     //tick多少次后发生一次中断
 
 // 10ms触发一次中断
-//#define JIFFY (1000 / HZ)
+#define JIFFY (1000 / HZ)
 
-//int jiffy = JIFFY;
-//int cpu_tickes = 0;
+int jiffy = JIFFY;
+int cpu_tickes = 0;
 
-void clock_init() {
+void clock_init()
+{
     out_byte(PIT_CTRL_REG, 0b00110100);
     /*
      * 设置tick多少次后发生一次中断
@@ -30,9 +34,9 @@ void clock_init() {
 
 static int val;
 //时钟中断处理函数
-void clock_handler(int idt_index) {
-    //send_eoi(idt_index);
-
-    printk("0x%x\n", idt_index + val);
-    val += 1;
+void clock_handler(int idt_index)
+{
+    cpu_tickes++;
+    task_wakeup();
+    do_timer();
 }

@@ -11,7 +11,7 @@ void kernel_main(void)
 {
     console_init();     //初始化控制台，清空屏幕
     gdt_init();         //初始化gdt全局描述符表
-    idt_init();         //初始化中断描符表
+    idt_init();         //初始化中断向量表
     clock_init();       //时钟中断初始化，设定10ms一次中断，可以到clock.c中设置
 
     print_check_memory_info();      //内存的检测结果
@@ -19,7 +19,7 @@ void kernel_main(void)
     memory_map_int();               //对内存进行位图管理
 
     task_init();
-    sched();                        //任务调度
+    //sched();                        //任务调度
 
     __asm__("sti;");    //打开中断
 

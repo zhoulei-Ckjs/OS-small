@@ -29,7 +29,7 @@ SEG_LIMIT equ 0xfffff           ;20位寻址能力
 B8000_SEG_BASE equ 0xb8000
 B8000_SEG_LIMIT equ 0x7fff
 
-;段选择子
+;段选择子，其实是偏移（每个段描述符占8个字节，所以这里刚好左移三位）
 CODE_SELECTOR equ (1 << 3)      ;这里一个gdt描述符占8位，所以这是第一个即gdt_code的选择子
 DATA_SELECTOR equ (2 << 3)      ;同上，这是gdt_data的选择子、
 B8000_SELECTOR equ (3 << 3)     ;显示器的选择子
@@ -106,7 +106,6 @@ memory_check:
 
     mov [ARDS_TIMES_BUFFER], ax     ; 保存内存检测结果，一共进行了多少次20个字节的检测
     mov [CHECK_BUFFER_OFFSET], di   ; 保存offset
-;xchg bx,bx
 
 .memory_check_success:
     mov si, memory_check_success_msg
@@ -116,7 +115,7 @@ memory_check:
 enter_protected_mode:
     ; 关中断
     cli
-;xchg bx,bx  ;---------------------------------------------------------------------------------
+
     ; 加载gdt表
     lgdt  [gdt_ptr]
 
@@ -134,7 +133,7 @@ enter_protected_mode:
     mov   eax, cr0
     or    eax , 1           ;最低位置1开启保护模式
     mov   cr0, eax
-;xchg bx,bx  ;---------------------------------------------------------------------------------
+
     jmp CODE_SELECTOR:protected_mode
 
 ;内存出错打印信息
@@ -172,13 +171,13 @@ protected_mode:
     mov gs, ax
 
     mov esp, 0x9fbff
-;xchg bx,bx  ;---------------------------------------------------------------------------------
+
     ; 将内核读入内存
     mov edi, KERNEL_ADDR        ;要读取到的地址
     mov ecx, 3                  ;从那个扇区开始读
     mov bl, 60                  ;读多少个扇区
     call read_hd                ;读盘
-;xchg bx,bx  ;---------------------------------------------------------------------------------
+
     jmp CODE_SELECTOR:KERNEL_ADDR
 
 read_hd:
