@@ -18,8 +18,8 @@ extern void move_to_user_mode();
 task_t* tasks[NR_TASKS] = {0};
 
 /*
- * 获取一个空闲的process
- * 返回：PID
+ * 获取一个空闲的process，给进程放一个坑
+ * 返回：找到了坑位返回PID，找不到坑位返回-1
  */
 int find_empty_process()
 {
@@ -121,13 +121,13 @@ void* t3_fun(void* arg)
  */
 void* idle(void* arg)
 {
-    create_task("init", move_to_user_mode, 1);
-//    create_task("t1", t1_fun, 2);   //创建一个任务
-//    create_task("t2", t2_fun, 3);
-//    create_task("t3", t3_fun, 4);
+//    create_task("init", move_to_user_mode, 1);
+    create_task("t1", t1_fun, 2);   //创建一个任务
+    create_task("t2", t2_fun, 3);
+    create_task("t3", t3_fun, 4);
 
     while (true) {
-//        printk("idle task running...\n");
+        printk("idle task running...\n");
 
         __asm__ volatile ("sti;");
         __asm__ volatile ("hlt;");

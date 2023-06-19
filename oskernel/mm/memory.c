@@ -118,14 +118,17 @@ void* get_free_page()
     bool find = false;
 
     int i = g_physics_memory_map.bitmap_item_used;
-    for (; i < g_physics_memory.pages_total; ++i) {
-        if (0 == g_physics_memory_map.map[i]) {
+    for (; i < g_physics_memory.pages_total; ++i)
+    {
+        if (0 == g_physics_memory_map.map[i])
+        {
             find = true;
             break;
         }
     }
 
-    if (!find) {
+    if (!find)
+    {
         printk("memory used up!");
         return NULL;
     }

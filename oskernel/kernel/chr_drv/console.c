@@ -30,8 +30,8 @@
 #define ASCII_DEL 0x7F
 
 static uint screen; // 当前显示器开始的内存位置
-static uint pos; // 记录当前光标的内存位置
-static uint x, y; // 当前光标的坐标
+static uint pos;    // 记录当前光标的内存位置
+static uint x, y;   // 当前光标的坐标
 
 // 设置当前显示器开始的位置
 static void set_screen() {

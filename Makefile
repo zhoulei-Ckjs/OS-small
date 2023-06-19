@@ -40,6 +40,7 @@ ${BUILD}/elf_kernel.bin: ${BUILD}/boot/kernel.o ${BUILD}/init/main.o ${BUILD}/ke
 	${BUILD}/kernel/asm/sched.o \
 	${BUILD}/kernel/asm/kernel.o ${BUILD}/kernel/system_call.o ${BUILD}/lib/write.o ${BUILD}/lib/error.o ${BUILD}/kernel/system_call.o \
     ${BUILD}/lib/stdio.o ${BUILD}/lib/stdlib.o
+    #${BUILD}/kernel/asm/system_call.o ${BUILD}/lib/unistd.o ${BUILD}/kernel/asm/unistd.o
 	ld -m elf_i386 $^ -o $@ -Ttext 0x1200
 
 #内存检查部分
@@ -90,7 +91,7 @@ qemug: all
 
 qemu: all
 	qemu-system-i386 \
-	-m 32M \						#32M内存
+	-m 32M \
 	-boot c \
 	-hda ./build/os.img
 
