@@ -4,6 +4,9 @@
 extern printk
 extern keymap_handler       ;中断处理程序
 extern exception_handler    ;异常处理程序
+extern system_call_table    ;系统调用列表
+
+extern current              ;当前任务
 
 ;中断处理程序
 global interrupt_handler_entry
@@ -20,6 +23,33 @@ keymap_handler_entry:
     push 0x21
     call keymap_handler     ;读取字符，对字符进行接收
     add esp, 4
+
+    iret
+
+; 系统调用中断入口
+global system_call_entry
+system_call_entry:
+    mov esi, [current]
+
+    mov edi, [esp + 4 * 3]
+    mov [esi + 4 * 14], edi         ; 保存r3 esp
+
+    mov [esi + 4 * 15], ebp
+
+    push edx
+    push ecx
+    push ebx
+
+    call [system_call_table + eax * 4]
+
+    ; 恢复esp,前面压入了三个参数
+    add esp, 12
+
+    ; 恢复ebp
+    mov esi, [current]
+    mov ebp, [esi + 4 * 15]
+
+    xchg bx, bx
 
     iret
 

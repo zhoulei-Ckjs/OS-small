@@ -22,6 +22,8 @@ extern void keymap_handler_entry();
  * 定义在clock_handler.asm中
  */
 extern void clock_handler_entry();
+// 在interrupt_handler.asm中定义，系统调用入口
+extern void system_call_entry();
 
 // 是在汇编中定义的中断处理程序，0-19的系统保留中断
 extern int interrupt_handler_table[0x2f];
@@ -39,7 +41,7 @@ void idt_init()
         /*
          * 中断处理程序，其中0-19，是特定的异常与错误；20-31，映射中断控制芯片的IRQ0-IRQ15
          * */
-        if (i <= 0x13) {        //系统保留的中断号，这里我认为是0x13
+        if (i <= 0x15) {
             handler = (int)interrupt_handler_table[i];
         }
 
@@ -50,6 +52,13 @@ void idt_init()
         if (0x20 == i)
         {
             handler = (int)clock_handler_entry;
+        }
+
+        /*
+         * 调用门中断处理函数，用于处理用户态的系统调用
+         */
+        if (0x80 == i) {
+            handler = system_call_entry;
         }
 
         /*
@@ -65,7 +74,8 @@ void idt_init()
         p->reserved = 0;      // 保留不用
         p->type = 0b1110;     // 中断门
         p->segment = 0;       // 系统段，段基址是0，保护模式利用段基址+选择子进行访问
-        p->DPL = 0;           // 内核态，ring0级别
+        //p->DPL = 0;           // 内核态，ring0级别
+        p->DPL = (0x80 == i)? 3 : 0;    // 内核态，ring0级别，中断描述符为ring3
         p->present = 1;       // 有效
     }
 

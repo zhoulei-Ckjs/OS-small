@@ -118,19 +118,22 @@ static void command_del()
     *(u16 *)pos = 0x0720;
 }
 
-void console_write(char *buf, u32 count)
+int console_write(char *buf, u32 count)
 {
     CLI                             //关中断
+    int write_size = 0;             //记录写了多少字
     char ch;
     char *ptr = (char *)pos;
     while (count--)
     {
+        write_size++;
         ch = *buf++;                //获得字符
         switch (ch)
         {
             case ASCII_NUL:
                 break;
             case ASCII_BEL:
+                // todo \a          响铃符号
                 break;
             case ASCII_BS:          //退格符
                 command_bs();
@@ -176,9 +179,11 @@ void console_write(char *buf, u32 count)
     }
     set_cursor();
     STI                             //开中断
+    return write_size;
 }
 
-void console_init(void) {
+void console_init(void)
+{
     console_clear();
 //    short *ptr = (short *)pos;    //获取当前位置
 //    *ptr++ = 0xf848;              //往显存中写H

@@ -9,6 +9,8 @@ extern int jiffy;
 extern int cpu_tickes;
 
 extern void sched_task();
+// 进入用户态
+extern void move_to_user_mode();
 
 /*
  * 所有的task
@@ -66,12 +68,18 @@ task_t* create_task(char* name, task_fun_t fun, int priority)
     // 加入tasks
     tasks[task->task.pid] = &(task->task);
 
-    task->task.tss.cr3 = (int)task + sizeof(task_t);    //获得了联合体task_union_t的栈起始地址（为什么？）
+    task->task.tss.cr3 = virtual_memory_init();
     task->task.tss.eip = fun;
 
     // r0 stack
     task->task.esp0 = (int)task + PAGE_SIZE;            //这个程序是运行在内核态的，保存内核态的栈顶
     task->task.ebp0 = task->task.esp0;                  //ring0栈底
+
+    // r3 stack
+    task->task.esp3 = malloc(4096) + PAGE_SIZE;
+    task->task.ebp3 = task->task.esp3;
+    task->task.tss.esp = task->task.esp3;
+    task->task.tss.ebp = task->task.ebp3;
 
     task->task.tss.esp0 = task->task.esp0;
 
@@ -113,9 +121,10 @@ void* t3_fun(void* arg)
  */
 void* idle(void* arg)
 {
-    create_task("t1", t1_fun, 1);   //创建一个任务
-    create_task("t2", t2_fun, 2);
-    create_task("t3", t3_fun, 3);
+    create_task("init", move_to_user_mode, 1);
+//    create_task("t1", t1_fun, 2);   //创建一个任务
+//    create_task("t2", t2_fun, 3);
+//    create_task("t3", t3_fun, 4);
 
     while (true) {
 //        printk("idle task running...\n");
@@ -177,6 +186,31 @@ void task_exit(int code, task_t* task)
 }
 
 /**
+ * 推出当前任务
+ * @param code
+ */
+void current_task_exit(int code)
+{
+    for (int i = 1; i < NR_TASKS; ++i)
+    {
+        task_t* tmp = tasks[i];
+
+        if (current == tmp) {
+            printk("task exit: %s\n", tmp->name);
+
+            tmp->exit_code = code;
+
+            // 先移除，后面有父子进程再相应处理
+            tasks[i] = NULL;
+
+            current = NULL;
+
+            break;
+        }
+    }
+}
+
+/**
  * 让task休眠
  * @param ms
  */
@@ -218,4 +252,12 @@ void task_wakeup()
             task->counter = task->priority;
         }
     }
+}
+
+/*
+ * 获得esp ring3级别
+ */
+int get_esp3(task_t* task)
+{
+    return task->esp3;
 }

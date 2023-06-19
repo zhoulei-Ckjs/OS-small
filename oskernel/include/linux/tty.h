@@ -8,6 +8,12 @@
 #include "types.h"
 
 void console_init(void);
-void console_write(char *buf, u32 count);
+/**
+ * 系统控制台写字符
+ * @param buf
+ * @param count
+ * @return
+ */
+int console_write(char *buf, u32 count);
 
 #endif //OS_TTY_H
