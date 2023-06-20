@@ -38,7 +38,6 @@ void *virtual_memory_init()
                 int virtual_addr = j * 0x1000;      //初始化第12位为1（从0开始，暂时不知道干嘛的）
                 *item = 0b00000000000000000000000000000111 | virtual_addr;  //初始化二级页表中的内容
                     //普通用户也可以访问_可读写_有效
-                printk("j = : 0x%p\n", j);
             }
         }
         else

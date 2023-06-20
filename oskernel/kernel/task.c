@@ -127,7 +127,7 @@ void* idle(void* arg)
     create_task("t3", t3_fun, 4);
 
     while (true) {
-        printk("idle task running...\n");
+        //printk("idle task running...\n");
 
         __asm__ volatile ("sti;");
         __asm__ volatile ("hlt;");

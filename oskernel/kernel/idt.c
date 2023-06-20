@@ -32,6 +32,7 @@ extern int interrupt_handler_table[0x2f];
 void idt_init()
 {
     printk("init idt...\n");
+    CLI
     for (int i = 0; i < INTERRUPT_TABLE_SIZE; ++i)
     {
         interrupt_gate_t* p = &interrupt_table[i];

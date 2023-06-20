@@ -37,14 +37,14 @@ typedef struct tss_t
     u32 esp2;     // ring2 的栈顶地址
     u32 ss2;      // ring2 的栈段选择子
     u32 cr3;
-    u32 eip;        //当前任务的下一条指令的地址
+    u32 eip;        //  8   当前任务的下一条指令的地址
     u32 flags;
     u32 eax;        //当前任务的寄存器----下面都是
     u32 ecx;
     u32 edx;
     u32 ebx;
     u32 esp;
-    u32 ebp;
+    u32 ebp;        // 15
     u32 esi;
     u32 edi;
     u32 es;
@@ -107,6 +107,9 @@ void task_exit(int code, task_t* task);
  */
 void task_sleep(int ms);
 // 唤醒正在睡眠的任务
+/**
+ * 将到时间的sleeping任务全部唤醒
+ */
 void task_wakeup();
 // 让这个进程的已经执行的时间片增加
 int inc_scheduling_times(task_t* task);

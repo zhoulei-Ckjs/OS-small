@@ -33,18 +33,18 @@ switch_task:
 
     push eax                        ; 获取父进程ID，如果不为0表示子进程，不需要压入task_exit_handler
     call get_task_ppid              ; 主调函数负责平栈
-    add esp, 4                      ;调用后平栈
+    add esp, 4                      ; 调用后平栈
     cmp eax, 0
     jne .recover_env                ; 父进程不为0
 
     ; 父进程为0
     mov eax, [current]
     push eax                        ;进程号
-    call inc_scheduling_times
-    add esp, 4          ;调用后平栈
+    call inc_scheduling_times       ; 返回当前任务的已经调度了多少时间，并将其 +1
+    add esp, 4                      ;调用后平栈
 
     cmp eax, 0
-    jne .recover_env                ; 不是第一次调度，就执行一次
+    jne .recover_env                ; 不是第一次调度
 
     ; 如果是第一次調度
     mov eax, task_exit_handler
