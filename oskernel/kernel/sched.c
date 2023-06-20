@@ -70,7 +70,7 @@ task_t* find_ready_task()
         }
         else
         {
-            if (task->counter > next->counter)
+            if (task->counter > next->counter)      //找到最小的counter
             {
                 next = task;
             }
@@ -112,7 +112,7 @@ void sched()
 {
     if (NULL != current)
     {
-        if (TASK_SLEEPING != current->state)
+        if (TASK_SLEEPING != current->state)        //是running就变ready
         {
             current->state = TASK_READY;
         }

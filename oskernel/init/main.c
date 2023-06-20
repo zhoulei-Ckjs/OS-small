@@ -6,6 +6,8 @@
 #include "../include/stdio.h"
 #include "../include/stdlib.h"
 
+int Init_task = 0;
+
 extern void clock_init();
 
 void user_mode() {
@@ -30,6 +32,8 @@ void kernel_main(void)
 
 
     task_init();
+    Init_task = 1;
+
     //sched();                        //任务调度
 
     __asm__("sti;");    //打开中断

@@ -69,7 +69,8 @@ static inline void init_bucket_desc()
     free_bucket_desc = first;
 }
 
-void* malloc(size_t len) {
+void* malloc(size_t len)
+{
     struct _bucket_dir	*bdir;      //桶目录
     struct bucket_desc	*bdesc;
     void			*retval;

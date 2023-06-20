@@ -9,6 +9,8 @@ extern clock_handler
 ; 定义在sched.c中
 extern current
 
+extern Init_task
+
 ; 时钟中断入口函数，每次时钟中断都要保存当前任务执行到哪里了，以及寄存器指针
 ; ecx
 ; eip
@@ -18,6 +20,11 @@ global clock_handler_entry
 clock_handler_entry:
 
     push ecx
+;------------------------------
+    mov ecx, [Init_task]
+    cmp ecx, 0
+    je .call_return
+;------------------------------
 
     mov ecx, [current]
     cmp ecx, 0
@@ -47,6 +54,10 @@ clock_handler_entry:
     call clock_handler
     add esp, 4
 
+    iret
+
+.call_return:
+    add esp, 4
     iret
 
 msg:

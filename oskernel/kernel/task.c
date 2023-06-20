@@ -7,7 +7,9 @@
 extern task_t* current;
 extern int jiffy;
 extern int cpu_tickes;
-
+/**
+ * sched.asm中
+ */
 extern void sched_task();
 // 进入用户态
 extern void move_to_user_mode();
@@ -69,7 +71,7 @@ task_t* create_task(char* name, task_fun_t fun, int priority)
     tasks[task->task.pid] = &(task->task);
 
     task->task.tss.cr3 = virtual_memory_init();
-    task->task.tss.eip = fun;
+    task->task.tss.eip = fun;                           //功能函数
 
     // r0 stack
     task->task.esp0 = (int)task + PAGE_SIZE;            //这个程序是运行在内核态的，保存内核态的栈顶
@@ -227,7 +229,7 @@ void task_sleep(int ms)
     int ticks = ms / jiffy;
     ticks += (0 == ms % jiffy)? 0 : 1;
 
-    current->counter = cpu_tickes + ticks;      //这里是什么？
+    current->counter = cpu_tickes + ticks;      //ticks为我们想要让这个进程休眠的时间的换算成cpu_ticks
     current->state = TASK_SLEEPING;
 
     sched_task();

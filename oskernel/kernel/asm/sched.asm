@@ -41,7 +41,7 @@ switch_task:
     mov eax, [current]
     push eax                        ;进程号
     call inc_scheduling_times       ; 返回当前任务的已经调度了多少时间，并将其 +1
-    add esp, 4                      ;调用后平栈
+    add esp, 4                      ; 调用后平栈
 
     cmp eax, 0
     jne .recover_env                ; 不是第一次调度
