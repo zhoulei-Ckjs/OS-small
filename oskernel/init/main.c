@@ -1,25 +1,35 @@
 #include "../include/linux/tty.h"
-#include "../include/linux/kernel.h"
 #include "../include/linux/traps.h"
 #include "../include/linux/mm.h"
 #include "../include/linux/task.h"
 #include "../include/stdio.h"
-#include "../include/stdlib.h"
+#include "../include/unistd.h"
 
-int Init_task = 0;
 
 extern void clock_init();
 
-void user_mode() {
-    int age = 10;
-
+void user_mode()
+{
     char* str = "welcome";
     printf("%s, %d\n", str, 11);
+
+//    pid_t pid = fork();
+//    if (pid > 0) {
+//        printf("pid=%d, ppid=%d\n", getpid(), getppid());
+//    } else if (0 == pid) {
+//        printf("pid=%d, ppid=%d\n", getpid(), getppid());
+//
+//        for (int i = 0; i < 10; ++i) {
+//            printf("%d\n", i);
+//        }
+////        while (true);
+//    }
 }
 
 void kernel_main(void)
 {
     console_init();     //初始化控制台，清空屏幕
+    clock_init();       //时钟中断初始化，设定10ms一次中断，可以到clock.c中设置
 
     print_check_memory_info();      //内存的检测结果
     memory_init();                  //初始化内存
@@ -27,18 +37,10 @@ void kernel_main(void)
 
     gdt_init();         //初始化gdt全局描述符表
     idt_init();         //初始化中断向量表
-    clock_init();       //时钟中断初始化，设定10ms一次中断，可以到clock.c中设置
-
-
 
     task_init();
-    Init_task = 1;
-
-    //sched();                        //任务调度
 
     __asm__("sti;");    //打开中断
-
-    user_mode();
 
     while (true);
 }

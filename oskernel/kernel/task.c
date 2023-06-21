@@ -11,7 +11,10 @@ extern int cpu_tickes;
  * sched.asm中
  */
 extern void sched_task();
-// 进入用户态
+/**
+ * 进入用户态
+ * 在kernel.asm中
+ */
 extern void move_to_user_mode();
 
 /*
@@ -123,12 +126,13 @@ void* t3_fun(void* arg)
  */
 void* idle(void* arg)
 {
-//    create_task("init", move_to_user_mode, 1);
-    create_task("t1", t1_fun, 2);   //创建一个任务
-    create_task("t2", t2_fun, 3);
-    create_task("t3", t3_fun, 4);
+    create_task("init", move_to_user_mode, 1);
+//    create_task("t1", t1_fun, 2);   //创建一个任务
+//    create_task("t2", t2_fun, 3);
+//    create_task("t3", t3_fun, 4);
 
-    while (true) {
+    while (true)
+    {
         //printk("idle task running...\n");
 
         __asm__ volatile ("sti;");
@@ -141,7 +145,7 @@ void* idle(void* arg)
  */
 void task_init()
 {
-    create_task("idle", idle, 0);
+    create_task("idle", idle, 0);       //idle是功能函数
 }
 
 /*

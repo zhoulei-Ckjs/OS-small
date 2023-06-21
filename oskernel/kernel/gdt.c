@@ -18,7 +18,8 @@ int tss_selector;           //tss选择子
 
 tss_t tss;
 
-static void r3_gdt_code_item(int gdt_index, int base, int limit) {
+static void r3_gdt_code_item(int gdt_index, int base, int limit)
+{
     // 在实模式时已经构建了4个全局描述符，所以从4开始
     if (gdt_index < 4) {
         printk("the gdt_index:%d has been used...\n", gdt_index);
@@ -41,9 +42,11 @@ static void r3_gdt_code_item(int gdt_index, int base, int limit) {
     item->base_high = base >> 24 & 0xff;
 }
 
-static void r3_gdt_data_item(int gdt_index, int base, int limit) {
+static void r3_gdt_data_item(int gdt_index, int base, int limit)
+{
     // 在实模式时已经构建了4个全局描述符，所以从4开始
-    if (gdt_index < 4) {
+    if (gdt_index < 4)
+    {
         printk("the gdt_index:%d has been used...\n", gdt_index);
         return;
     }
@@ -84,13 +87,14 @@ void init_tss_item(int gdt_index, int base, int limit)
     item->big = 0;         // 固定为 0
     item->long_mode = 0;   // 固定为 0
     item->present = 1;     // 在内存中
-    item->DPL = 0;         // 用于任务门或调用门
+    item->DPL = 0;         // 用于任务门或调用门，ring0级别
     item->type = 0b1001;   // 32 位可用 tss
 
     asm volatile("ltr ax;"::"a"(tss_selector));
 }
 
-void gdt_init() {
+void gdt_init()
+{
     printk("init gdt...\n");
 
     //执行了SGDT指令，将global descriptor table（GDT）的限制（limit）和基址（base address）加载到gdt_ptr变量中
@@ -99,6 +103,7 @@ void gdt_init() {
     memcpy(&gdt, gdt_ptr.base, gdt_ptr.limit);
 
     // 创建r3用的段描述符：代码段、数据段
+    // 在开启了页表后，程序使用段选择子来访问内存时，CPU首先会将段选择子转换成线性地址（即虚拟地址），然后再通过页表将虚拟地址转换成物理地址
     r3_gdt_code_item(4, 0, 0xfffff);
     r3_gdt_data_item(5, 0, 0xfffff);
 

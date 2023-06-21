@@ -5,7 +5,7 @@
 #include "mm.h"
 
 // 进程上限
-#define NR_TASKS 64
+#define NR_TASKS 3
 
 typedef void* (*task_fun_t)(void*);     //定义一个函数指针
 

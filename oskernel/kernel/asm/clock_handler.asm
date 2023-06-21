@@ -20,11 +20,6 @@ global clock_handler_entry
 clock_handler_entry:
 
     push ecx
-;------------------------------
-    mov ecx, [Init_task]
-    cmp ecx, 0
-    je .call_return
-;------------------------------
 
     mov ecx, [current]
     cmp ecx, 0
@@ -54,10 +49,6 @@ clock_handler_entry:
     call clock_handler
     add esp, 4
 
-    iret
-
-.call_return:
-    add esp, 4
     iret
 
 msg:
