@@ -34,11 +34,12 @@ keymap_handler_entry:
 ; edx = 第三个参数
 global system_call_entry
 system_call_entry:
-    ; 这里ss由0x2b变为0x10，esp由0x106000变为0x101fec           ---------????
-    ; 0x101fec是一个已经被分配的空间，为kmalloc建桶所用
+    ; 这里ss由0x2b变为0x10，esp由0x106000变为0x101fec，为什么？
+    ; 理由是当cpu发生中断时会切换到内核的栈空间，会去tss段中寻找esp0的值，这个地址我们在 init_tss_item() 时初始化的。
+    ; 同时进入内核态后会将ss改为内核态内核态的代码段选择子
     mov esi, [current]
 
-    mov edi, [esp + 4 * 3]
+    mov edi, [esp + 4 * 3]          ; 在x86架构上，当CPU执行系统调用时，会自动将当前用户态的程序现场保存到内核栈中。
     mov [esi + 4 * 14], edi         ; 保存r3 esp
 
     mov [esi + 4 * 15], ebp

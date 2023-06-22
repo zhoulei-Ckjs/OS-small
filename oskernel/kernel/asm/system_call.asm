@@ -1,6 +1,6 @@
 [BITS 32]
 [SECTION .text]
-; 创建孩子进程的函数
+; 创建孩子进程的函数，在task.c中
 extern create_child
 extern get_task_pid
 extern get_task_ppid

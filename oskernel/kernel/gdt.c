@@ -67,7 +67,13 @@ static void r3_gdt_data_item(int gdt_index, int base, int limit)
     item->base_high = base >> 24 & 0xff;
 }
 
-//初始化tss
+/**
+ * 初始化tss
+ * 当cpu发生中断时会切换到内核的栈空间，会去tss段中寻找esp0的值，这个地址我们在 init_tss_item() 时初始化的。同时进入内核态后会将ss改为内核态内核态的代码段选择子
+ * @param gdt_index 选择子编号
+ * @param base 段基址
+ * @param limit 段界限
+ */
 void init_tss_item(int gdt_index, int base, int limit)
 {
     printk("init tss...\n");
@@ -76,7 +82,7 @@ void init_tss_item(int gdt_index, int base, int limit)
     tss.esp0 = kmalloc(4096) + PAGE_SIZE;     //内核栈顶
     tss.iobase = sizeof(tss);
 
-    gdt_item_t* item = &gdt[gdt_index];
+    gdt_item_t* item = &gdt[gdt_index];             //将tss存储在gdt表的第6个，这样才能通过tss选择子加载这个tss属性
 
     item->base_low = base & 0xffffff;
     item->base_high = (base >> 24) & 0xff;

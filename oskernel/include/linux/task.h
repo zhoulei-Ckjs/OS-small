@@ -76,8 +76,8 @@ typedef struct task_t
     int             scheduling_times;       // 调度次数
     int             esp0;                   // 刚开始创建的时候 活动的esp3保存在tss中
     int             ebp0;                   // 内核栈底
-    int             esp3;
-    int             ebp3;
+    int             esp3;                   // ring3级别初始栈顶
+    int             ebp3;                   // ring3级别初始栈底
     int             magic;
 }task_t;
 

@@ -20,15 +20,18 @@ physics_memory_info_t g_physics_memory;
 physics_memory_map_t g_physics_memory_map;
 
 //内存初始化
-void memory_init() {
+void memory_init()
+{
     check_memory_info_t* p = (check_memory_info_t*)ARDS_ADDR;
     check_memmory_item_t* p_data = (check_memmory_item_t*)(ARDS_ADDR + 2);
 
     //将BIOS检测的可用内存读取出来
-    for (int i = 0; i < p->times; ++i) {
+    for (int i = 0; i < p->times; ++i)
+    {
         check_memmory_item_t* tmp = p_data + i;
 
-        if (tmp->base_addr_low > 0 && tmp->type == ZONE_VALID) {
+        if (tmp->base_addr_low > 0 && tmp->type == ZONE_VALID)
+        {
             //这里就定义了一块连续，会不会有可用内存不连续的情况？也就有两块可用内存，不会
             g_physics_memory.addr_start = tmp->base_addr_low;       //这里因为我们就不超过4G，所以也就没管高地址
             g_physics_memory.valid_mem_size = tmp->length_low;
@@ -50,7 +53,8 @@ void memory_init() {
 }
 
 //
-void memory_map_int() {
+void memory_map_int()
+{
     // 验证
     if (VALID_MEMORY_FROM != g_physics_memory.addr_start) {
         printk("[%s:%d] no valid physics memory\n", __FILE__, __LINE__);

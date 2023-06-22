@@ -109,7 +109,9 @@ void* kmalloc(size_t len)
         if (!cp)
             return NULL;
         // 将真正代分配的物理页划分为一块块的 相应桶size的 物理页，将它们用链表串联起来，这里涉及到一个名字：嵌入式指针
-        for (i = PAGE_SIZE / bdir->size; i > 1; i--) {
+        // 这里可以看出，4096位桶则直接略过了
+        for (i = PAGE_SIZE / bdir->size; i > 1; i--)
+        {
             *((char **) cp) = cp + bdir->size;
             cp += bdir->size;
         }

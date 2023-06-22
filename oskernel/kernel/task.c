@@ -129,7 +129,7 @@ task_t* create_child(char* name, task_fun_t fun, int priority)
     // 加入tasks
     tasks[task->task.pid] = &(task->task);
 
-    task->task.tss.cr3 = (int)task + sizeof(task_t);
+    task->task.tss.cr3 = (int)task + sizeof(task_t);        //这里好像有问题，cr3寄存器为啥直接等于这个
     task->task.tss.eip = fun;
 
     // r0 stack
@@ -152,6 +152,7 @@ task_t* create_child(char* name, task_fun_t fun, int priority)
     int parent_esp_used = current->esp3 - current->tss.esp;
     int parent_ebp_used = current->ebp3 - current->tss.ebp;
 
+    // 不会覆盖父进程的堆栈信息，在此之上重新建立栈顶栈底
     task->task.tss.esp -= parent_esp_used;
     task->task.tss.ebp -= parent_ebp_used;
 
