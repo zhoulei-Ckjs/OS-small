@@ -4,7 +4,8 @@
 extern printk
 extern keymap_handler       ;中断处理程序
 extern exception_handler    ;异常处理程序
-extern system_call_table    ;系统调用列表
+extern system_call_table    ;系统调用列表，system_call.c中
+extern system_call
 
 extern current              ;当前任务
 
@@ -27,8 +28,14 @@ keymap_handler_entry:
     iret
 
 ; 系统调用中断入口
+; eax = 调用号
+; ebx = 第一个参数
+; ecx = 第二个参数
+; edx = 第三个参数
 global system_call_entry
 system_call_entry:
+    ; 这里ss由0x2b变为0x10，esp由0x106000变为0x101fec           ---------????
+    ; 0x101fec是一个已经被分配的空间，为kmalloc建桶所用
     mov esi, [current]
 
     mov edi, [esp + 4 * 3]

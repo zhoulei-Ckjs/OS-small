@@ -59,7 +59,7 @@ gdt_b8000:                                          ;显示器的gdt表
     dw B8000_SEG_BASE & 0xffff
     db B8000_SEG_BASE >> 16 & 0xff
     ;    P_DPL_S_TYPE
-    db 0b1_00_1_0010            ;段描述符有效_工作在ring0_非系统段_仅具有只读权限
+    db 0b1_00_1_0010                                    ;段描述符有效_工作在ring0_非系统段_仅具有只读权限
     ;    G_DB_AVL_LIMIT
     db 0b0_1_00_0000 | (B8000_SEG_LIMIT >> 16 & 0xf) ;以字节为单位_32位段_非64位代码段_段界限（最高4位）
     db B8000_SEG_BASE >> 24 & 0xff

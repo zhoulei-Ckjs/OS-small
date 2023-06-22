@@ -39,7 +39,8 @@ typedef struct xdt_ptr_t {
 /*
  * 中断门的定义
  * */
-typedef struct interrupt_gate_t {
+typedef struct interrupt_gate_t
+{
     short offset0;    // 段内偏移 0 ~ 15 位
     short selector;   // 代码段选择子
     char reserved;    // 保留不用

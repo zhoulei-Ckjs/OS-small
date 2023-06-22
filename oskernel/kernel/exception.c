@@ -39,7 +39,8 @@ void normal_protect_exception(int idt_index) {
 //打印中断信息
 //idt_index是中断索引
 void exception_handler(int idt_index, int edi, int esi, int ebp, int esp,
-                       int ebx, int edx, int ecx, int eax, int eip, char cs, int eflags) {
+                       int ebx, int edx, int ecx, int eax, int eip, char cs, int eflags)
+{
     printk("\n==========\n");
     printk("EXCEPTION : %s \n", messages[idt_index]);
     printk("   VECTOR : 0x%02X\n", idt_index);

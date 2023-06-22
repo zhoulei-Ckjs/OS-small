@@ -95,7 +95,8 @@ void memory_map_int() {
 
 
 //打印BIOS内存检测结果
-void print_check_memory_info() {
+void print_check_memory_info()
+{
     check_memory_info_t* p = (check_memory_info_t*)ARDS_ADDR;               //获取检查信息的结构体
     check_memmory_item_t* p_data = (check_memmory_item_t*)(ARDS_ADDR + 2);  //获取ards数组的首地址
 

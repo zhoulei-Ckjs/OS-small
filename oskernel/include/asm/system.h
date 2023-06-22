@@ -9,7 +9,7 @@
 
 #define DEBUG
 
-#define BOCHS_DEBUG_MAGIC   __asm__("xchg bx, bx");     //bochs断点
+#define BOCHS_DEBUG_MAGIC   __asm__("xchg bx, bx; push eax; pop eax");     //bochs断点
 
 #define STI   __asm__("sti");       //开中断
 #define CLI   __asm__("cli");       //关中断

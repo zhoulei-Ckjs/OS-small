@@ -11,6 +11,7 @@ extern current
 
 extern Init_task
 
+; 由clock_handler_entry保存当前进程的信息，由switch_task取出下一个进程的eip和环境继续执行
 ; 时钟中断入口函数，每次时钟中断都要保存当前任务执行到哪里了，以及寄存器指针
 ; ecx
 ; eip
@@ -33,7 +34,8 @@ clock_handler_entry:
     mov [ecx + 16 * 4], esi
     mov [ecx + 17 * 4], edi
 
-    mov eax, [esp + 4]          ; eip
+    mov eax, [esp + 4]          ; eip 由于栈顶地址在进行函数调用时通常用来保存返回地址，
+                                ; 而返回地址就是下一条要执行的指令的地址，所以在函数中可以通过ESP寄存器加上一个偏移量来访问返回地址
     mov [ecx + 8 * 4], eax      ; tss.eip
 
     mov eax, esp

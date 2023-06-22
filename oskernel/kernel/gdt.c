@@ -73,7 +73,7 @@ void init_tss_item(int gdt_index, int base, int limit)
     printk("init tss...\n");
 
     tss.ss0 = r0_data_selector;
-    tss.esp0 = get_free_page() + PAGE_SIZE;     //内核栈顶
+    tss.esp0 = kmalloc(4096) + PAGE_SIZE;     //内核栈顶
     tss.iobase = sizeof(tss);
 
     gdt_item_t* item = &gdt[gdt_index];
@@ -105,7 +105,7 @@ void gdt_init()
     // 创建r3用的段描述符：代码段、数据段
     // 在开启了页表后，程序使用段选择子来访问内存时，CPU首先会将段选择子转换成线性地址（即虚拟地址），然后再通过页表将虚拟地址转换成物理地址
     r3_gdt_code_item(4, 0, 0xfffff);
-    r3_gdt_data_item(5, 0, 0xfffff);
+    r3_gdt_data_item(5, 0, 0xfffff);        //这里base为0，方便访问，不用进行ss:esp进行访问栈等，因为ss找到的gdt的base初始化就为0，0:esp = esp
 
     // 创建r3用的选择子：代码段、数据段
     r3_code_selector = 4 << 3 | 0b011;
@@ -116,7 +116,6 @@ void gdt_init()
     gdt_ptr.base = &gdt;
     gdt_ptr.limit = sizeof(gdt) - 1;    //这里定义了gdt数组为256个，limit的计算为256 * 8 - 1
 
-    //BOCHS_DEBUG_MAGIC
     __asm__ volatile ("lgdt gdt_ptr;");
 
     init_tss_item(6, &tss, sizeof(tss_t) - 1);      //初始化tss段

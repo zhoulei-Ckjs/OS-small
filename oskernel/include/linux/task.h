@@ -39,14 +39,14 @@ typedef struct tss_t
     u32 cr3;
     u32 eip;        //  8   当前任务的下一条指令的地址
     u32 flags;
-    u32 eax;        //当前任务的寄存器----下面都是
-    u32 ecx;
-    u32 edx;
-    u32 ebx;
-    u32 esp;
-    u32 ebp;        // 15
-    u32 esi;
-    u32 edi;
+    u32 eax;        // 10   当前任务的寄存器----下面都是
+    u32 ecx;        // 11
+    u32 edx;        // 12
+    u32 ebx;        // 13
+    u32 esp;        // 14   ring3 级别栈顶
+    u32 ebp;        // 15   ring3 级别栈底
+    u32 esi;        // 16
+    u32 edi;        // 17
     u32 es;
     u32 cs;
     u32 ss;
@@ -75,7 +75,7 @@ typedef struct task_t
     int             priority;
     int             scheduling_times;       // 调度次数
     int             esp0;                   // 刚开始创建的时候 活动的esp3保存在tss中
-    int             ebp0;
+    int             ebp0;                   // 内核栈底
     int             esp3;
     int             ebp3;
     int             magic;

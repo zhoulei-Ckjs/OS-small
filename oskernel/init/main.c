@@ -13,17 +13,21 @@ void user_mode()
     char* str = "welcome";
     printf("%s, %d\n", str, 11);
 
-//    pid_t pid = fork();
-//    if (pid > 0) {
-//        printf("pid=%d, ppid=%d\n", getpid(), getppid());
-//    } else if (0 == pid) {
-//        printf("pid=%d, ppid=%d\n", getpid(), getppid());
-//
-//        for (int i = 0; i < 10; ++i) {
-//            printf("%d\n", i);
-//        }
-////        while (true);
-//    }
+    pid_t pid = fork();
+    if (pid > 0)
+    {
+        printf("pid=%d, ppid=%d\n", getpid(), getppid());
+    }
+    else if (0 == pid)
+    {
+        printf("pid=%d, ppid=%d\n", getpid(), getppid());
+
+        for (int i = 0; i < 10; ++i)
+        {
+            printf("%d\n", i);
+        }
+//        while (true);
+    }
 }
 
 void kernel_main(void)

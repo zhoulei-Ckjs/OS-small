@@ -57,7 +57,7 @@ int find_empty_process()
  */
 task_t* create_task(char* name, task_fun_t fun, int priority)
 {
-    task_union_t* task = (task_union_t*)malloc(4096);
+    task_union_t* task = (task_union_t*)kmalloc(4096);
     memset(task, 0, PAGE_SIZE);
 
     task->task.pid = find_empty_process();
@@ -73,7 +73,8 @@ task_t* create_task(char* name, task_fun_t fun, int priority)
     // 加入tasks
     tasks[task->task.pid] = &(task->task);
 
-    task->task.tss.cr3 = virtual_memory_init();
+//    task->task.tss.cr3 = virtual_memory_init();
+    task->task.tss.cr3 = (int)task + sizeof(task_t);
     task->task.tss.eip = fun;                           //功能函数
 
     // r0 stack
@@ -81,7 +82,7 @@ task_t* create_task(char* name, task_fun_t fun, int priority)
     task->task.ebp0 = task->task.esp0;                  //ring0栈底
 
     // r3 stack
-    task->task.esp3 = malloc(4096) + PAGE_SIZE;
+    task->task.esp3 = kmalloc(4096) + PAGE_SIZE;
     task->task.ebp3 = task->task.esp3;
     task->task.tss.esp = task->task.esp3;
     task->task.tss.ebp = task->task.ebp3;
@@ -93,32 +94,70 @@ task_t* create_task(char* name, task_fun_t fun, int priority)
     return task;
 }
 
-/*
- * 临时的任务
+/**
+ * 创建紫禁城
+ * @param name
+ * @param fun
+ * @param priority
+ * @return
  */
-void* t1_fun(void* arg)
+task_t* create_child(char* name, task_fun_t fun, int priority)
 {
-    for (int i = 0; i < 0xffffffff; ++i)
+    if (NULL == current)
     {
-        printk("t1: %d\n", i);
-        task_sleep(1000);
+        printk("[%s:%d] current task is null\n", __FILE__, __LINE__);
+        return NULL;
     }
-}
-void* t2_fun(void* arg)
-{
-    for (int i = 0; i < 0xffffffff; ++i)
-    {
-        printk("t2: %d\n", i);
-        task_sleep(500);
-    }
-}
-void* t3_fun(void* arg)
-{
-    for (int i = 0; i < 0xffffffff; ++i)
-    {
-        printk("t3: %d\n", i);
-        task_sleep(300);
-    }
+
+    task_union_t* task = (task_union_t*)kmalloc(4096);
+    memset(task, 0, PAGE_SIZE);
+
+    // 拷贝父进程的内存空间
+    memcpy(task, current, PAGE_SIZE);
+
+    // 设置个性化数据
+    task->task.pid = find_empty_process();
+
+    task->task.ppid = (NULL == current)? 0 : current->pid;
+
+    task->task.priority = priority;
+    task->task.counter = priority;
+    task->task.scheduling_times = 0;
+
+    strcpy(task->task.name, name);
+
+    // 加入tasks
+    tasks[task->task.pid] = &(task->task);
+
+    task->task.tss.cr3 = (int)task + sizeof(task_t);
+    task->task.tss.eip = fun;
+
+    // r0 stack
+    task->task.esp0 = (int)task + PAGE_SIZE;
+    task->task.ebp0 = task->task.esp0;
+
+    task->task.tss.esp0 = task->task.esp0;
+
+    // r3 stack
+    task->task.esp3 = kmalloc(4096) + PAGE_SIZE;
+    task->task.ebp3 = task->task.esp3;
+
+    task->task.tss.esp = task->task.esp3;
+    task->task.tss.ebp = task->task.ebp3;
+
+    // 将父进程r3 stack拷贝到子进程r3 stack
+    memcpy(task->task.esp3 - PAGE_SIZE, current->esp3 - PAGE_SIZE, PAGE_SIZE);
+
+    // 计算子进程的esp
+    int parent_esp_used = current->esp3 - current->tss.esp;
+    int parent_ebp_used = current->ebp3 - current->tss.ebp;
+
+    task->task.tss.esp -= parent_esp_used;
+    task->task.tss.ebp -= parent_ebp_used;
+
+    task->task.state = TASK_READY;
+
+    return task;
 }
 
 /*
@@ -127,9 +166,7 @@ void* t3_fun(void* arg)
 void* idle(void* arg)
 {
     create_task("init", move_to_user_mode, 1);
-//    create_task("t1", t1_fun, 2);   //创建一个任务
-//    create_task("t2", t2_fun, 3);
-//    create_task("t3", t3_fun, 4);
+
 
     while (true)
     {
@@ -145,7 +182,7 @@ void* idle(void* arg)
  */
 void task_init()
 {
-    create_task("idle", idle, 0);       //idle是功能函数
+    create_task("idle", idle, 0);       //idle是功能函数，创建0号任务
 }
 
 /*
@@ -162,6 +199,11 @@ pid_t get_task_ppid(task_t* task)
 int inc_scheduling_times(task_t* task)
 {
     return task->scheduling_times++;
+}
+
+pid_t get_task_pid(task_t* task)
+{
+    return task->pid;
 }
 
 /*
@@ -184,6 +226,7 @@ void task_exit(int code, task_t* task)
 
             current = NULL;
 
+            free_s(tmp->esp3, 4096);
             free_s(tmp, 4096);      //这里是因为在申请空间的时候就申请了4096，见本文件的create_task函数
 
             break;
@@ -210,6 +253,9 @@ void current_task_exit(int code)
             tasks[i] = NULL;
 
             current = NULL;
+
+            free_s(tmp->esp3 - PAGE_SIZE, 4096);
+            free_s(tmp, 4096);
 
             break;
         }
@@ -266,4 +312,7 @@ void task_wakeup()
 int get_esp3(task_t* task)
 {
     return task->esp3;
+}
+void set_esp3(task_t* task, int esp) {
+    task->tss.esp = esp;
 }

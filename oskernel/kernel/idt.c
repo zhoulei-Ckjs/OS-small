@@ -58,7 +58,8 @@ void idt_init()
         /*
          * 调用门中断处理函数，用于处理用户态的系统调用
          */
-        if (0x80 == i) {
+        if (0x80 == i)
+        {
             handler = system_call_entry;
         }
 

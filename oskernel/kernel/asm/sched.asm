@@ -27,7 +27,7 @@ switch_task:
     ; 恢复上下文
     mov eax, [current]
 
-    ; 恢复ebp0 esp0
+    ; 恢复ebp0 esp0，内核的栈顶和栈底
     mov esp, [eax + 4]
     mov ebp, [eax + 15 * 4]
 

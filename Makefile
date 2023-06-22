@@ -39,8 +39,8 @@ ${BUILD}/elf_kernel.bin: ${BUILD}/boot/kernel.o ${BUILD}/init/main.o ${BUILD}/ke
 	${BUILD}/kernel/task.o ${BUILD}/kernel/sched.o \
 	${BUILD}/kernel/asm/sched.o \
 	${BUILD}/kernel/asm/kernel.o ${BUILD}/kernel/system_call.o ${BUILD}/lib/write.o ${BUILD}/lib/error.o ${BUILD}/kernel/system_call.o \
-    ${BUILD}/lib/stdio.o ${BUILD}/lib/stdlib.o
-    #${BUILD}/kernel/asm/system_call.o ${BUILD}/lib/unistd.o ${BUILD}/kernel/asm/unistd.o
+    ${BUILD}/lib/stdio.o ${BUILD}/lib/stdlib.o \
+    ${BUILD}/kernel/asm/system_call.o ${BUILD}/lib/unistd.o ${BUILD}/kernel/asm/unistd.o
 	ld -m elf_i386 $^ -o $@ -Ttext 0x1200
 
 #内存检查部分

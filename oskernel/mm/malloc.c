@@ -69,7 +69,7 @@ static inline void init_bucket_desc()
     free_bucket_desc = first;
 }
 
-void* malloc(size_t len)
+void* kmalloc(size_t len)
 {
     struct _bucket_dir	*bdir;      //桶目录
     struct bucket_desc	*bdesc;
@@ -80,8 +80,9 @@ void* malloc(size_t len)
         if (bdir->size >= len)
             break;
     // 找到了最后一个都没找到大于这个空间的内存，说明申请的内存 大于 4096 byte
-    if (!bdir->size) {
-        printk("malloc called with impossibly large argument (%d)\n", len);
+    if (!bdir->size)
+    {
+        printk("kmalloc called with impossibly large argument (%d)\n", len);
         return NULL;
     }
 
@@ -93,8 +94,9 @@ void* malloc(size_t len)
     /*
      * 如果没有找到有空闲空间的桶，那就新开辟一个桶加入桶链表
      */
-    if (!bdesc) {
-        char		*cp;
+    if (!bdesc)
+    {
+        char    *cp;
         int		i;
 
         if (!free_bucket_desc)              //如果所有的桶描述符都用完了（空闲桶描述符专门申请了一个页来管理）
@@ -124,7 +126,7 @@ void* malloc(size_t len)
 }
 
 /*
- * 为了实现free自动识别要释放的内存大小，我们要增加一个标记，在我们malloc的时候都是以一个page作为一个桶的一部分
+ * 为了实现free自动识别要释放的内存大小，我们要增加一个标记，在我们kmalloc的时候都是以一个page作为一个桶的一部分
  * 回想get_free_page的时候，我们以1B作为一个页是否被用的标记，这个1B完全可以存储这个页属于哪个桶
  * 另一种思想是在待分配的物理页首地址处写上大小，但是这样的话4096大小和2048等就不好弄了
  * 有待去实现自动识别的free...
