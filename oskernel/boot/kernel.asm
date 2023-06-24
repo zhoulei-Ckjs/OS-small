@@ -51,7 +51,7 @@ _start:
     ; 屏蔽从芯片所有中断响应
 .disable_8259a_slave:
     ;mov al, 11111111b
-    mov al, 00111111b           ;??_开启硬盘中断
+    mov al, 10111111b           ;开启硬盘中断
     out 0A1h, al
 
     ; 调用kernel程序

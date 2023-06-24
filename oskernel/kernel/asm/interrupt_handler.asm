@@ -18,6 +18,15 @@ interrupt_handler_entry:
 
     iret
 
+;硬盘中断处理程序
+global hd_handler_entry
+hd_handler_entry:
+    push msg1
+    call printk
+    add esp, 4              ;平栈
+
+    iret
+
 ; 键盘中断
 global keymap_handler_entry
 keymap_handler_entry:
@@ -202,6 +211,8 @@ interrupt_handler_table:
 
 msg:
     db "interrupt_handler", 10, 0
+msg1:
+    db "hd_interrupt_handler", 10, 0
 
 exception_msg:
     db "exception_handler", 10, 0

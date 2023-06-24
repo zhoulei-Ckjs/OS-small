@@ -24,6 +24,10 @@ extern void keymap_handler_entry();
 extern void clock_handler_entry();
 // 在interrupt_handler.asm中定义，系统调用入口
 extern void system_call_entry();
+/**
+ * 硬盘中断处理程序
+ */
+extern void hd_handler_entry();
 
 // 是在汇编中定义的中断处理程序，0-19的系统保留中断
 extern int interrupt_handler_table[0x2f];
@@ -55,12 +59,19 @@ void idt_init()
             handler = (int)clock_handler_entry;
         }
 
+        /**
+         * 硬盘中断处理程序，注册到中断向量表
+         */
+        if (0x2e == i) {
+            handler = (int)hd_handler_entry;
+        }
+
         /*
          * 调用门中断处理函数，用于处理用户态的系统调用
          */
         if (0x80 == i)
         {
-            handler = system_call_entry;
+            handler = (int)system_call_entry;
         }
 
         /*

@@ -21,6 +21,7 @@ void kernel_thread_fun(void* arg)
     int count = 1;
     unsigned int cmd = 0xec;        //检测硬盘
 //    unsigned int cmd = 0x20;        //读硬盘
+//    unsigned int cmd = 0x30;        //写硬盘
 
 
     out_byte(HD_NSECTOR, count);
