@@ -23,6 +23,8 @@ void hd_init()
 
 void hd_drive()
 {
-    short v = in_word(0x1f0);
-    printk("%x\n", v);
+    char buf[512] = {0};
+//    short v = in_word(0x1f0);
+    port_read(0x1f0, buf, 512);     //从磁盘读取一个扇区
+    printk("123456\n");
 }
