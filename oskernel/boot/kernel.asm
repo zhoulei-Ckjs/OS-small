@@ -42,14 +42,16 @@ _start:
     ; 屏蔽所有中断，只接收键盘中断
 .enable_8259a_main:
     ;mov al, 11111101b           ;只接收键盘中断
-    mov al, 11111110b           ;接收时钟中断，bochs设置如何支持中断有待研究
+    ;mov al, 11111110b           ;接收时钟中断，bochs设置如何支持中断有待研究
     ;mov al, 11111100b           ;接收键盘中断和时钟中断
+    mov al, 11111000b            ;开启级联_开启键盘_开启时钟
     ;mov al, 11111111b           ;关闭中断
     out 21h, al
 
     ; 屏蔽从芯片所有中断响应
 .disable_8259a_slave:
-    mov al, 11111111b
+    ;mov al, 11111111b
+    mov al, 00111111b           ;??_开启硬盘中断
     out 0A1h, al
 
     ; 调用kernel程序
