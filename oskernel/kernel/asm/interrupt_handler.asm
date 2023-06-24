@@ -6,7 +6,6 @@ extern keymap_handler       ;中断处理程序
 extern exception_handler    ;异常处理程序
 extern system_call_table    ;系统调用列表，system_call.c中
 extern system_call
-extern hd_drive             ;硬盘驱动
 
 extern current              ;当前任务
 
@@ -17,12 +16,6 @@ interrupt_handler_entry:
     call printk
     add esp, 4              ;平栈
 
-    iret
-
-;硬盘中断处理程序
-global hd_handler_entry
-hd_handler_entry:
-    call hd_drive
     iret
 
 ; 键盘中断

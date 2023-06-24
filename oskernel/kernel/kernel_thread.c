@@ -24,12 +24,7 @@ void kernel_thread_fun(void* arg)
 //    unsigned int cmd = 0x30;        //写硬盘
 
 
-    out_byte(HD_NSECTOR, count);
-    out_byte(HD_SECTOR, from & 0xff);
-    out_byte(HD_LCYL, from >> 8 & 0xff);
-    out_byte(HD_HCYL, from >> 16 & 0xff);
-    out_byte(HD_CURRENT, 0b11100000 | (hd << 4) | (from >> 24 & 0xf));
-    out_byte(HD_COMMAND, cmd);
+    hd_out(hd, from, count, cmd, hd_drive);
 
     while(true)
     {

@@ -1,6 +1,14 @@
 #ifndef OS_HD_H
 #define OS_HD_H
 
+#define HD_NSECTOR	0x1f2	//往这个端口发送要读/写多少个扇区
+#define HD_SECTOR	0x1f3	//这个端口发送数据表示从哪个扇区开始读/写
+#define HD_LCYL		0x1f4	//这个端口发送的数据能够指定所要读/写的柱面（低字节）
+#define HD_HCYL		0x1f5	//这个端口发送的数据能够指定所要读/写的柱面（高字节）
+#define HD_CURRENT	0x1f6	//在该寄存器中，高四位（hhhh）表示磁头（head）号，低三位（ddd）表示磁盘驱动器（drive）号，其余位保留
+#define HD_STATUS	0x1f7	//端口描述了硬盘状态，也用于下达命令
+#define HD_COMMAND HD_STATUS	//读时作为状态，写时作为命令
+
 /**
  * 从端口读取数据到缓冲区
  * cld  清除方向标志位，确保数据按照顺序被读入缓冲区中
@@ -24,8 +32,25 @@ __asm__("cld;rep;insw"::"d" (port),"D" (buf),"c" (nr))
 __asm__("cld;rep;outsw"::"d" (port),"S" (buf),"c" (nr))
 
 /**
+ * 定义处理函数类型
+ */
+typedef void (*dev_handler_fun_t)(void);
+
+/**
  * 初始化硬盘
  */
 void hd_init();
+
+/**
+ * 发送命令
+ * @param hd
+ * @param from
+ * @param count
+ * @param cmd
+ * @param handler
+ */
+void hd_out(char hd, int from, int count, unsigned int cmd, dev_handler_fun_t handler);
+
+void hd_drive();
 
 #endif //OS_HD_H
