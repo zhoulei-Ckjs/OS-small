@@ -23,7 +23,10 @@ void kernel_thread_fun(void* arg)
     unsigned int cmd = 0x20;        //读硬盘
 //    unsigned int cmd = 0x30;        //写硬盘
 
-
+/*
+ * 现在有个问题，在多任务情况下，一个进程要读取硬盘，但是在时钟中断情况下，可能当前执行的是另外一个进程
+ * 这个时候如果发生中断，那么就是另外一个进程在执行
+ */
     hd_out(hd, from, count, cmd, hd_drive);
 
     while(true)
