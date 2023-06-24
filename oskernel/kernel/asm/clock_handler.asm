@@ -39,7 +39,7 @@ clock_handler_entry:
     mov [ecx + 8 * 4], eax      ; tss.eip
 
     mov eax, esp
-    add eax, 0x10       ;这里是找到了最初的esp
+    add eax, 0x10               ; 这里是找到了最初的esp
     mov [ecx + 4], eax          ; tss.esp0
 
     mov eax, ecx

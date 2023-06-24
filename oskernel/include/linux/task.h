@@ -74,10 +74,10 @@ typedef struct task_t
     int             counter;                // 当前任务要执行几个时间片，等于优先级
     int             priority;
     int             scheduling_times;       // 调度次数
-    int             esp0;                   // 刚开始创建的时候 活动的esp3保存在tss中
+    int             esp0;                   // 刚开始创建任务的时候 活动的esp3保存在tss中
     int             ebp0;                   // 内核栈底
-    int             esp3;                   // ring3级别初始栈顶
-    int             ebp3;                   // ring3级别初始栈底
+    int             esp3;                   // ring3级别初始栈顶，刚开始创建任务的时候，会给分配一个页，将这个页作为栈，给分配的栈顶
+    int             ebp3;                   // ring3级别初始栈底，刚开始创建任务的时候，会给分配一个页，将这个页作为栈，给分配的栈底
     int             magic;
 }task_t;
 
