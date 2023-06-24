@@ -40,8 +40,14 @@ ${BUILD}/elf_kernel.bin: ${BUILD}/boot/kernel.o ${BUILD}/init/main.o ${BUILD}/ke
 	${BUILD}/kernel/asm/sched.o \
 	${BUILD}/kernel/asm/kernel.o ${BUILD}/kernel/system_call.o ${BUILD}/lib/write.o ${BUILD}/lib/error.o ${BUILD}/kernel/system_call.o \
     ${BUILD}/lib/stdio.o ${BUILD}/lib/stdlib.o \
-    ${BUILD}/kernel/asm/system_call.o ${BUILD}/lib/unistd.o ${BUILD}/kernel/asm/unistd.o
+    ${BUILD}/kernel/asm/system_call.o ${BUILD}/lib/unistd.o ${BUILD}/kernel/asm/unistd.o \
+    ${BUILD}/kernel/kernel_thread.o ${BUILD}/kernel/blk_drv/hd.o
 	ld -m elf_i386 $^ -o $@ -Ttext 0x1200
+
+#硬盘驱动部分
+${BUILD}/kernel/blk_drv/%.o: oskernel/kernel/blk_drv/%.c
+	$(shell mkdir -p ${BUILD}/kernel/blk_drv)
+	gcc ${CFLAGS} ${DEBUG} -c $< -o $@
 
 #内存检查部分
 ${BUILD}/mm/%.o: oskernel/mm/%.c
@@ -87,13 +93,19 @@ qemug: all
     	-m 32M \
     	-boot c \
     	-hda ./build/os.img \
+    	-hdb ./hdb.img \
+        -hdc ./hdc.img \
+        -hdd ./hdd.img \
     	-s -S
 
 qemu: all
 	qemu-system-i386 \
 	-m 32M \
 	-boot c \
-	-hda ./build/os.img
+	-hda ./build/os.img \
+	-hdb ./hdb.img \
+    -hdc ./hdc.img \
+    -hdd ./hdd.img
 
 # 生成的内核镜像给VBox、VMware用
 vmdk: $(BUILD)/master.vmdk

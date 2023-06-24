@@ -12,10 +12,10 @@ extern int cpu_tickes;
  */
 extern void sched_task();
 /**
- * 进入用户态
- * 在kernel.asm中
+ * 内核线程
+ * @param arg
  */
-extern void move_to_user_mode();
+extern void kernel_thread_fun(void* arg);
 
 /*
  * 所有的task
@@ -75,7 +75,7 @@ task_t* create_task(char* name, task_fun_t fun, int priority)
 
 //    task->task.tss.cr3 = virtual_memory_init();
     task->task.tss.cr3 = (int)task + sizeof(task_t);
-    task->task.tss.eip = fun;                           //功能函数
+    task->task.tss.eip = (u32)fun;                           //功能函数
 
     // r0 stack
     task->task.esp0 = (int)task + PAGE_SIZE;            //这个程序是运行在内核态的，保存内核态的栈顶
@@ -130,7 +130,7 @@ task_t* create_child(char* name, task_fun_t fun, int priority)
     tasks[task->task.pid] = &(task->task);
 
     task->task.tss.cr3 = (int)task + sizeof(task_t);        //这里好像有问题，cr3寄存器为啥直接等于这个
-    task->task.tss.eip = fun;
+    task->task.tss.eip = (u32)fun;
 
     // r0 stack
     task->task.esp0 = (int)task + PAGE_SIZE;
@@ -166,8 +166,7 @@ task_t* create_child(char* name, task_fun_t fun, int priority)
  */
 void* idle(void* arg)
 {
-    create_task("init", move_to_user_mode, 1);
-
+    create_task("init", kernel_thread_fun, 1);
 
     while (true)
     {
