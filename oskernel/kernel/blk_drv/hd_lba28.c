@@ -6,7 +6,16 @@ dev_handler_fun_t dev_interrupt_handler;
 
 void do_identify()
 {
+    printk("[%s:%d]run...\n", __FUNCTION__, __LINE__);
 
+    char buf[512] = {0};
+    // 读硬盘
+    port_read(0x1f0, buf, 256);
+
+    /*
+     * 如何解析再说
+     * */
+    printk("123456\n");         //临时打印数字
 }
 
 /**

@@ -1,6 +1,8 @@
 #ifndef OS_HD_H
 #define OS_HD_H
 
+#include "types.h"
+
 #define HD_NSECTOR	0x1f2	//往这个端口发送要读/写多少个扇区
 #define HD_SECTOR	0x1f3	//这个端口发送数据表示从哪个扇区开始读/写
 #define HD_LCYL		0x1f4	//这个端口发送的数据能够指定所要读/写的柱面（低字节）
