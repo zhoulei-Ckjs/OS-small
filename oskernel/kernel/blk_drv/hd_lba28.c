@@ -3,6 +3,12 @@
 // 用于保存当前硬盘下一次发生中断该如何处理的函数，如读命令，发生中断后这里应该保存读函数
 dev_handler_fun_t dev_interrupt_handler;
 
+
+void do_identify()
+{
+
+}
+
 /**
  * 发送相应的读写命令
  * @param hd
@@ -23,3 +29,4 @@ void hd_out(char hd, int from, int count, unsigned int cmd, dev_handler_fun_t ha
     out_byte(HD_CURRENT, 0b11100000 | (hd << 4) | (from >> 24 & 0xf));
     out_byte(HD_COMMAND, cmd);
 }
+

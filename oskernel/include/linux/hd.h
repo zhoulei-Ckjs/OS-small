@@ -27,6 +27,7 @@ __asm__("cld;rep;insw"::"d" (port),"D" (buf),"c" (nr))
  * outsw 通过反复执行 "outsw" 指令，可以将缓冲区中的所有数据都写入到目标端口中。
  * "d" 对应于 DX 寄存器，用于存储 I/O 端口地址。
  * "S" 表示寄存器 "ESI"
+ * "c" ecx的值为nr，表示要读取多少次循环，一次循环2个字节，512字节需要256次则nr值需要传递为256
  */
 #define port_write(port, buf, nr) \
 __asm__("cld;rep;outsw"::"d" (port),"S" (buf),"c" (nr))
@@ -52,5 +53,9 @@ void hd_init();
 void hd_out(char hd, int from, int count, unsigned int cmd, dev_handler_fun_t handler);
 
 void hd_drive();
+/**
+ * 用于检测磁盘
+ */
+void do_identify();
 
 #endif //OS_HD_H

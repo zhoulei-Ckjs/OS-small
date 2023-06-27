@@ -25,6 +25,6 @@ void hd_drive()
 {
     char buf[512] = {0};
 //    short v = in_word(0x1f0);
-    port_read(0x1f0, buf, 512);     //从磁盘读取一个扇区
-    printk("123456\n");
+    port_read(0x1f0, buf, 255);     //从磁盘读取一个扇区
+    printk("123456\n");         //一个扇区后面的55 aa应该没了，因为就读取了255次循环，而读完一个扇区需要256次
 }
