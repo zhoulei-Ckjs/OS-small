@@ -3,6 +3,8 @@
 
 #include "types.h"
 
+#define HD_DATA		0x1f0	//读写数据用端口
+#define HD_ERROR	0x1f1	//如果以后错误，则放错误码
 #define HD_NSECTOR	0x1f2	//往这个端口发送要读/写多少个扇区
 #define HD_SECTOR	0x1f3	//这个端口发送数据表示从哪个扇区开始读/写
 #define HD_LCYL		0x1f4	//这个端口发送的数据能够指定所要读/写的柱面（低字节）
@@ -10,6 +12,18 @@
 #define HD_CURRENT	0x1f6	//在该寄存器中，高四位（hhhh）表示磁头（head）号，低三位（ddd）表示磁盘驱动器（drive）号，其余位保留
 #define HD_STATUS	0x1f7	//端口描述了硬盘状态，也用于下达命令
 #define HD_COMMAND HD_STATUS	//读时作为状态，写时作为命令
+
+/**
+ * 硬盘状态的宏定义
+ */
+#define ERR_STAT	0x01    // 1表示发生了错误,错误代码已放置在错误寄存器中
+#define INDEX_STAT	0x02    // 1表示控制器检测到索引标记(啥意思?)
+#define ECC_STAT	0x04	// 1 表示控制器必须通过使用 ECC 字节来纠正数据（纠错码：扇区末尾的额外字节，允许验证其完整性，有时还可以纠正错误）
+#define DRQ_STAT	0x08    // 1 表示控制器正在等待数据（用于写入）或正在发送数据（用于读取）。该位为 0 时不要访问数据寄存器。
+#define SEEK_STAT	0x10    // 1 表示读/写磁头就位（搜索完成）
+#define WRERR_STAT	0x20    // 1 表示控制器检测到写入故障
+#define READY_STAT	0x40    // 1 表示控制器已准备好接受命令，并且驱动器以正确的速度旋转
+#define BUSY_STAT	0x80    // 1 表示控制器正忙于执行命令。设置该位时，不应访问任何寄存器（数字输出寄存器除外）
 
 /**
  * 从端口读取数据到缓冲区
