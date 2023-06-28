@@ -12,9 +12,17 @@ void do_identify()
     // 读硬盘
     port_read(0x1f0, buf, 256);
 
-    /*
-     * 如何解析再说
-     * */
+    hd_t hd;
+    // 从identify返回结果中取出硬盘信息
+    memcpy(&hd.number, buf + 10 * 2, 10 * 2);
+    hd.number[21] = '\0';
+    memcpy(&hd.model, buf + 27 * 2, 20 * 2);
+    hd.model[41] = '\0';
+
+    hd.sectors = *(int*)(buf + 60 * 2);
+
+    print_disk_info(&hd);
+
     printk("123456\n");         //临时打印数字
 }
 
@@ -39,3 +47,11 @@ void hd_out(char hd, int from, int count, unsigned int cmd, dev_handler_fun_t ha
     out_byte(HD_COMMAND, cmd);
 }
 
+void print_disk_info(hd_t* info)
+{
+    printk("===== Hard Disk Info Start =====\n");
+    printk("Hard disk Serial number: %s\n", info->dev_no);
+    printk("Drive model: %s\n", info->model);
+    printk("Hard disk size: %d sectors, %d M\n", info->sectors, info->sectors * 512 / 1024 / 1024);
+    printk("===== Hard Disk Info End =====\n");
+}

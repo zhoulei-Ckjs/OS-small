@@ -8,8 +8,8 @@ void kernel_thread_fun(void* arg)
     char hd = 0;
     int from = 0;
     int count = 1;
-//    unsigned int cmd = 0xec;        //检测硬盘
-    unsigned int cmd = 0x20;        //读硬盘
+    unsigned int cmd = 0xec;        //检测硬盘
+//    unsigned int cmd = 0x20;        //读硬盘
 //    unsigned int cmd = 0x30;        //写硬盘
 
 /*

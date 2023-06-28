@@ -40,6 +40,20 @@ __asm__("cld;rep;outsw"::"d" (port),"S" (buf),"c" (nr))
 typedef void (*dev_handler_fun_t)(void);
 
 /**
+ * 硬盘信息结构
+ */
+typedef struct _hd_t
+{
+    u8              dev_no;
+    u8              is_master;      // 是否是主设备 1是 0否
+
+    // 数据来源：硬盘identify命令返回的结果
+    char number[10 * 2 + 1];    // 硬盘序列号    最后一个字节是补字符串结束符0用的,从硬盘读取的是没有结束符的
+    char model[20 * 2 + 1];     // 硬盘型号
+    int sectors;                // 扇区数 一个扇区512字节
+} __attribute__((packed)) hd_t;
+
+/**
  * 初始化硬盘
  */
 void hd_init();
@@ -59,5 +73,6 @@ void hd_drive();
  * 用于检测磁盘
  */
 void do_identify();
+void print_disk_info(hd_t* info);
 
 #endif //OS_HD_H
