@@ -1,8 +1,10 @@
 #include "../include/linux/hd.h"
 #include "../include/linux/kernel.h"
+#include "../include/shell.h"
 
 void kernel_thread_fun(void* arg)
 {
+    active_shell();
     hd_init();
 
     char hd = 0;
