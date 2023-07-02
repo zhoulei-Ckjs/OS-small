@@ -1,5 +1,6 @@
 #include "../include/shell.h"
 #include "../include/string.h"
+#include "../include/assert.h"
 
 bool g_active_shell = false;
 
@@ -20,6 +21,7 @@ void exec_shell()
 
     printk("start exec: %s\n", g_shell_command);
 
+    // 这里可以定义每个命令的函数
     if (!strcmp("1", g_shell_command))
     {
         printk("run 1\n");
@@ -37,7 +39,7 @@ void run_shell(char ch)
 
     if (g_shell_command_off >= 64)
     {
-        printk("The command length exceeds 64");
+        panic("The command length exceeds 64");
     }
 
     g_shell_command[g_shell_command_off++] = ch;
